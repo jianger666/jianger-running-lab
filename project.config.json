@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "jianger-running-lab",
   "description": "江耳跑步实验室 - 跑者智能体能分析小程序",
-  "appid": "touristappid",
+  "appid": "wx4e56f1925bbb4b92",
   "setting": {
     "urlCheck": true,
     "es6": false,
