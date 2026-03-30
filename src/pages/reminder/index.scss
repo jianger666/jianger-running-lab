@@ -1,0 +1,197 @@
+@import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
+
+.page-reminder {
+  min-height: 100vh;
+  padding: $spacing-sm $spacing-lg;
+  padding-bottom: 160px;
+}
+
+.page-reminder__desc {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-lg;
+}
+
+// ========== 提醒卡片 ==========
+
+.reminder-card {
+  margin-bottom: $spacing-md;
+
+  &__top {
+    @include flex-between;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__time-wrap {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__time {
+    font-size: $font-size-hero;
+    font-weight: 800;
+    color: $color-text-primary;
+    line-height: 1.1;
+    letter-spacing: -2px;
+  }
+
+  &__days {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-top: 4px;
+  }
+
+  &__content {
+    display: block;
+    font-size: $font-size-base;
+    color: $color-text-secondary;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__delete {
+    text-align: right;
+  }
+
+  &__delete-text {
+    font-size: $font-size-sm;
+    color: $color-danger;
+  }
+}
+
+// ========== 空状态 ==========
+
+.empty-hint {
+  @include flex-center;
+  padding: $spacing-xxl 0;
+
+  &__text {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+  }
+}
+
+// ========== 新建表单 ==========
+
+.add-form {
+  margin-top: $spacing-md;
+
+  &__row {
+    @include flex-between;
+    padding: $spacing-md 0;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__label {
+    font-size: $font-size-base;
+    color: $color-text-primary;
+    flex-shrink: 0;
+  }
+
+  &__input {
+    flex: 1;
+    text-align: right;
+    font-size: $font-size-base;
+    color: $color-text-primary;
+  }
+
+  &__placeholder {
+    color: $color-text-placeholder;
+  }
+
+  &__time-btn {
+    font-size: $font-size-xl;
+    font-weight: 700;
+    color: $color-primary;
+  }
+
+  &__days {
+    display: flex;
+    gap: $spacing-sm;
+    padding: $spacing-md 0;
+    flex-wrap: wrap;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-md;
+    margin-top: $spacing-lg;
+  }
+
+  &__cancel {
+    flex: 1;
+    @include flex-center;
+    padding: $spacing-md;
+    border-radius: $radius-lg;
+    border: 1px solid $color-border;
+  }
+
+  &__cancel-text {
+    font-size: $font-size-base;
+    color: $color-text-secondary;
+  }
+
+  &__submit {
+    flex: 2;
+    @include flex-center;
+    padding: $spacing-md;
+    border-radius: $radius-lg;
+    background: $color-primary;
+
+    &--loading {
+      opacity: 0.6;
+    }
+  }
+
+  &__submit-text {
+    font-size: $font-size-base;
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+// ========== 周几选择 ==========
+
+.day-chip {
+  @include flex-center;
+  width: 72px;
+  height: 72px;
+  border-radius: $radius-round;
+  background: $color-bg-input;
+  transition: all 0.2s;
+
+  &--active {
+    background: $color-primary;
+  }
+
+  &__text {
+    font-size: $font-size-base;
+    color: $color-text-secondary;
+
+    .day-chip--active & {
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+}
+
+// ========== 添加按钮 ==========
+
+.fab {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  @include flex-center;
+  padding: $spacing-md $spacing-xl;
+  border-radius: $radius-round;
+  background: $color-primary;
+  box-shadow: 0 8px 24px rgba($color-primary, 0.4);
+
+  &__text {
+    font-size: $font-size-base;
+    color: #fff;
+    font-weight: 600;
+  }
+}

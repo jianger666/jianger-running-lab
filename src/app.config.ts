@@ -8,6 +8,7 @@ export default defineAppConfig({
     'pages/bindCoros/index',
     'pages/watchBind/index',
     'pages/paceTable/index',
+    'pages/reminder/index',
   ],
   window: {
     backgroundTextStyle: 'light',
