@@ -7,7 +7,7 @@ import { Card } from '../../components';
 import './index.scss';
 
 const WEEK_LABELS = ['一', '二', '三', '四', '五', '六', '日'];
-const TEMPLATE_ID = ''; // 待填入微信后台申请的模板 ID
+const TEMPLATE_ID = 'r6Mg96WyISh0jUGySUSC0eJ2W2uR6csoSNMyI8i4rvU';
 
 const ReminderPage = () => {
   const [list, setList] = useState<Reminder[]>([]);
