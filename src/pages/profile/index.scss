@@ -1,0 +1,110 @@
+@import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
+
+.profile {
+  min-height: 100vh;
+  padding: $spacing-lg;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  padding: $spacing-xl 0;
+
+  &__avatar-btn {
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+    line-height: 1;
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  &__avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+  }
+
+  &__avatar-placeholder {
+    @include flex-center;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba($color-primary, 0.15);
+  }
+
+  &__avatar-letter {
+    font-size: $font-size-xxl;
+    font-weight: 700;
+    color: $color-primary;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__name {
+    display: block;
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-text-primary;
+  }
+
+  &__name-input {
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-text-primary;
+    background: transparent;
+    border: none;
+    padding: 0;
+    width: 100%;
+  }
+
+  &__sub {
+    display: block;
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+    margin-top: 4px;
+  }
+}
+
+.menu-group {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-md;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: $spacing-lg;
+  border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__text {
+    flex: 1;
+    font-size: $font-size-md;
+    color: $color-text-primary;
+    margin-left: $spacing-md;
+  }
+}
+
+.version {
+  display: block;
+  text-align: center;
+  font-size: $font-size-xs;
+  color: $color-text-placeholder;
+  margin-top: $spacing-xxl;
+}

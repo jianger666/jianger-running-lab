@@ -1,0 +1,86 @@
+@import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
+
+.page-activities {
+  min-height: 100vh;
+  padding: $spacing-sm $spacing-lg;
+}
+
+.activity-card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+
+  &__header {
+    @include flex-between;
+    margin-bottom: $spacing-md;
+  }
+
+  &__tag {
+    background: rgba($color-primary, 0.15);
+    border-radius: $radius-sm;
+    padding: 2px $spacing-sm;
+  }
+
+  &__type {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-primary;
+  }
+
+  &__date {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+  }
+
+  &__metrics {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.metric {
+  text-align: center;
+  flex: 1;
+
+  &__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  &__value {
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-text-primary;
+
+    &--highlight {
+      color: $color-primary;
+      font-size: $font-size-xl;
+    }
+  }
+
+  &__suffix {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  &__label {
+    display: block;
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-top: 2px;
+  }
+}
+
+.loading-more {
+  text-align: center;
+  padding: $spacing-lg;
+
+  &__text {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+  }
+}

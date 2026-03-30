@@ -1,0 +1,67 @@
+@import '../../styles/variables.scss';
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  transition: opacity 0.2s;
+
+  &--primary {
+    background: $color-primary;
+
+    .btn__text {
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+
+  &--secondary {
+    background: $color-bg-card;
+    border: 1px solid $color-border;
+
+    .btn__text {
+      color: $color-text-primary;
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+
+    .btn__text {
+      color: $color-primary;
+    }
+  }
+
+  &--small {
+    padding: $spacing-xs $spacing-md;
+
+    .btn__text {
+      font-size: $font-size-sm;
+    }
+  }
+
+  &--medium {
+    padding: $spacing-sm $spacing-lg;
+
+    .btn__text {
+      font-size: $font-size-md;
+    }
+  }
+
+  &--large {
+    padding: $spacing-md $spacing-xl;
+
+    .btn__text {
+      font-size: $font-size-lg;
+    }
+  }
+
+  &--block {
+    width: 100%;
+  }
+
+  &--disabled {
+    opacity: 0.5;
+  }
+}

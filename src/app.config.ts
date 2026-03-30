@@ -1,9 +1,44 @@
 export default defineAppConfig({
-  pages: ['pages/index/index'],
+  pages: [
+    'pages/index/index',
+    'pages/tools/index',
+    'pages/profile/index',
+    'pages/activities/index',
+    'pages/activityDetail/index',
+    'pages/bindCoros/index',
+    'pages/watchBind/index',
+    'pages/paceTable/index',
+  ],
   window: {
     backgroundTextStyle: 'light',
-    navigationBarBackgroundColor: '#1a1a2e',
-    navigationBarTitleText: '江耳跑步实验室',
+    navigationBarBackgroundColor: '#292929',
+    navigationBarTitleText: 'JR跑步助手',
     navigationBarTextStyle: 'white',
   },
-})
+  tabBar: {
+    color: '#999999',
+    selectedColor: '#f3799e',
+    backgroundColor: '#292929',
+    borderStyle: 'black',
+    list: [
+      {
+        pagePath: 'pages/index/index',
+        text: '首页',
+        iconPath: 'assets/tabbar/home.png',
+        selectedIconPath: 'assets/tabbar/home-active.png',
+      },
+      {
+        pagePath: 'pages/tools/index',
+        text: '工具箱',
+        iconPath: 'assets/tabbar/tools.png',
+        selectedIconPath: 'assets/tabbar/tools-active.png',
+      },
+      {
+        pagePath: 'pages/profile/index',
+        text: '我的',
+        iconPath: 'assets/tabbar/profile.png',
+        selectedIconPath: 'assets/tabbar/profile-active.png',
+      },
+    ],
+  },
+});

@@ -1,0 +1,53 @@
+---
+description: JR跑步助手小程序项目规范
+alwaysApply: true
+---
+
+# 项目规范
+
+## 技术栈
+- Taro 4 + React 18 + TypeScript + Sass
+- 小程序目标平台：微信小程序
+
+## 目录结构
+```
+/src
+  /apis          # 接口层
+    /request.ts  # HTTP 封装（拦截器 + get/post/put/delete 方法）
+    /<module>    # 按模块分文件夹（如 user、coros、activity）
+      /index.ts  # API 导出
+      /types/    # 接口类型定义
+  /components    # 全局共用组件（Button、Card、Empty 等）
+  /constants     # 常量（storage key 等）
+  /pages         # 页面
+  /styles        # 全局样式
+    /variables.scss  # 设计变量（色彩、间距、圆角、字号）
+    /mixins.scss     # 常用 mixin
+  /utils         # 工具函数
+```
+
+## APIs 层规范
+- 请求封装在 `src/apis/request.ts`，提供 `http.get/post/put/delete` 方法
+- 支持请求拦截器和响应拦截器
+- 响应拦截器统一处理错误 toast
+- 按页面/模块分文件夹建 API 文件
+- 接口类型定义放在各模块的 `types/index.ts` 中
+
+## 组件规范
+- 公共组件放 `src/components`，每个组件一个文件夹（index.tsx + index.scss）
+- 组件从 `src/components/index.ts` 统一导出
+- 使用函数式组件 + FC 类型
+- props 通过 interface 定义，使用解构对象参数
+
+## 样式规范
+- 全局设计变量定义在 `src/styles/variables.scss`
+- 页面/组件样式引用变量而非硬编码颜色/间距值
+- 使用 BEM 命名规范（block__element--modifier）
+- 暗色主题为主（背景 #0f0f23，卡片 #1a1a2e，主色 #e94560）
+
+## 常量管理
+- Storage key 统一在 `src/constants/storage.ts` 管理，禁止到处写字符串字面量
+
+## 类型规范
+- 接口返回的状态字段必须提取为 enum
+- 非全局通用的 type 和对应的 API 放在一起

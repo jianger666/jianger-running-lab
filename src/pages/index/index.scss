@@ -1,55 +1,268 @@
-.index {
-  padding: 40px 32px;
+@import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
+
+.home {
+  min-height: 100vh;
+  padding: $spacing-sm $spacing-lg;
+  padding-bottom: calc($spacing-xxl + 100px);
 }
 
-.hero {
+// ========== 统计区域 ==========
+
+.stats-section {
+  margin-bottom: $spacing-lg;
+}
+
+.stats-tabs {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 80px 0 60px;
+  margin-bottom: $spacing-md;
+  gap: $spacing-xs;
+}
 
-  &__title {
-    font-size: 48px;
-    font-weight: 700;
-    color: #1a1a2e;
-    margin-bottom: 16px;
+.stats-tab {
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  transition: all 0.2s;
+
+  &--active {
+    background: $color-primary;
   }
 
-  &__subtitle {
-    font-size: 28px;
-    color: #666;
+  &__text {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+
+    .stats-tab--active & {
+      color: $color-text-primary;
+      font-weight: 600;
+    }
   }
 }
 
-.features {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.stats-sync {
+  margin-left: auto;
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-round;
+  border: 1px solid $color-border;
+
+  &__text {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
 }
 
-.feature-card {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  border-radius: 16px;
-  padding: 40px 32px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+// ========== 统计卡片 ==========
 
-  &__icon {
-    font-size: 48px;
-    margin-bottom: 16px;
+.stats-card {
+  &__hero {
+    @include flex-between;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-lg;
+    border-bottom: 1px solid $color-border;
   }
 
-  &__title {
-    font-size: 32px;
+  &__hero-left {
+    display: flex;
+    align-items: baseline;
+    gap: $spacing-xs;
+  }
+
+  &__distance {
+    font-size: $font-size-hero;
+    font-weight: 800;
+    color: $color-primary;
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+
+  &__unit {
+    font-size: $font-size-lg;
+    color: $color-primary-light;
     font-weight: 600;
-    color: #1a1a2e;
-    margin-bottom: 8px;
   }
 
-  &__desc {
-    font-size: 26px;
-    color: #888;
-    line-height: 1.5;
+  &__trend {
+    text-align: right;
+  }
+
+  &__trend-text {
+    display: block;
+    font-size: $font-size-sm;
+    font-weight: 600;
+
+    &--up {
+      color: $color-success;
+    }
+
+    &--down {
+      color: $color-danger;
+    }
+  }
+
+  &__trend-label {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  &__grid {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.stat-item {
+  text-align: center;
+  flex: 1;
+
+  &__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  &__value {
+    font-size: $font-size-md;
+    font-weight: 700;
+    color: $color-text-primary;
+  }
+
+  &__suffix {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  &__label {
+    display: block;
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-top: 4px;
+  }
+}
+
+// ========== 最近训练 ==========
+
+.recent-section {
+  margin-top: $spacing-lg;
+}
+
+.section-header {
+  @include flex-between;
+  margin-bottom: $spacing-md;
+
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-text-primary;
+  }
+
+  &__more {
+    font-size: $font-size-sm;
+    color: $color-primary;
+  }
+}
+
+// ========== 活动卡片 ==========
+
+.activity-item {
+  margin-bottom: $spacing-md;
+
+  &__header {
+    @include flex-between;
+    margin-bottom: $spacing-md;
+  }
+
+  &__tag {
+    background: rgba($color-primary, 0.15);
+    border-radius: $radius-sm;
+    padding: 2px $spacing-sm;
+  }
+
+  &__type {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-primary;
+  }
+
+  &__date {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+  }
+
+  &__metrics {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.metric {
+  text-align: center;
+  flex: 1;
+
+  &__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  &__value {
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-text-primary;
+
+    &--highlight {
+      color: $color-primary;
+      font-size: $font-size-xl;
+    }
+  }
+
+  &__suffix {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  &__label {
+    display: block;
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-top: 2px;
+  }
+}
+
+// ========== 骨架屏 ==========
+
+.skeleton {
+  background: $color-bg-card-hover;
+  border-radius: $radius-sm;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+
+  &--lg {
+    width: 200px;
+    height: 64px;
+  }
+
+  &--sm {
+    width: 80px;
+    height: 32px;
+    margin: 0 auto;
+  }
+
+  &--xs {
+    width: 48px;
+    height: 16px;
+    margin: 6px auto 0;
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
   }
 }

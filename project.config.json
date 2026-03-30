@@ -1,17 +1,41 @@
 {
-  "miniprogramRoot": "dist/",
-  "projectname": "jianger-running-lab",
-  "description": "江耳跑步实验室 - 跑者智能体能分析小程序",
-  "appid": "wx4e56f1925bbb4b92",
-  "setting": {
-    "urlCheck": true,
-    "es6": false,
-    "enhance": false,
-    "compileHotReLoad": false,
-    "postcss": false,
-    "minified": false,
-    "bigPackageSizeSupport": true
-  },
-  "compileType": "miniprogram",
-  "condition": {}
+    "miniprogramRoot": "dist/",
+    "projectname": "jianger-running-lab",
+    "description": "JR跑步助手 - 跑者智能体能分析小程序",
+    "appid": "wx4e56f1925bbb4b92",
+    "setting": {
+        "urlCheck": true,
+        "es6": false,
+        "enhance": false,
+        "compileHotReLoad": false,
+        "postcss": false,
+        "minified": false,
+        "bigPackageSizeSupport": true,
+        "compileWorklet": false,
+        "uglifyFileName": false,
+        "uploadWithSourceMap": true,
+        "packNpmManually": false,
+        "packNpmRelationList": [],
+        "minifyWXSS": true,
+        "minifyWXML": true,
+        "localPlugins": false,
+        "disableUseStrict": false,
+        "useCompilerPlugins": false,
+        "condition": false,
+        "swc": false,
+        "disableSWC": true,
+        "babelSetting": {
+            "ignore": [],
+            "disablePlugins": [],
+            "outputPath": ""
+        }
+    },
+    "compileType": "miniprogram",
+    "condition": {},
+    "simulatorPluginLibVersion": {},
+    "packOptions": {
+        "ignore": [],
+        "include": []
+    },
+    "editorSetting": {}
 }

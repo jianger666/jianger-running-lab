@@ -1,0 +1,7 @@
+@import '../../styles/variables.scss';
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+}

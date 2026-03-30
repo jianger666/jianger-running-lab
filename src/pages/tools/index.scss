@@ -1,0 +1,52 @@
+@import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
+
+.page-tools {
+  min-height: 100vh;
+  padding: $spacing-md $spacing-lg $spacing-xxl;
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-sm;
+}
+
+.tool-card {
+  display: flex;
+  align-items: center;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  gap: $spacing-sm;
+}
+
+.tool-card__icon {
+  @include flex-center;
+  width: 56px;
+  height: 56px;
+  background: rgba($color-primary, 0.1);
+  border-radius: $radius-md;
+  flex-shrink: 0;
+}
+
+.tool-card__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.tool-card__title {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.tool-card__desc {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4px;
+  @include text-ellipsis;
+}
