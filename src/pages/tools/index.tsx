@@ -23,7 +23,7 @@ const TOOLS: ToolItem[] = [
   {
     key: 'reminder',
     title: '定时提醒',
-    desc: '到点提醒你去运动',
+    desc: '到点微信提醒',
     path: '/pages/reminder/index',
     icon: <NotesOutlined size={24} color="#f3799e" />,
   },

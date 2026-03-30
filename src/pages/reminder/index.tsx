@@ -1,19 +1,25 @@
-import { View, Text, Input, Picker, Switch } from '@tarojs/components';
-import Taro, { useDidShow } from '@tarojs/taro';
-import { useState } from 'react';
-import { reminderApi } from '../../apis/reminder';
-import { Reminder } from '../../apis/reminder/types';
-import { Card } from '../../components';
-import './index.scss';
+import { View, Text, Input, Picker, Switch } from "@tarojs/components";
+import Taro, { useDidShow } from "@tarojs/taro";
+import { useState } from "react";
+import { reminderApi } from "../../apis/reminder";
+import { Reminder } from "../../apis/reminder/types";
+import { Card } from "../../components";
+import "./index.scss";
 
-const WEEK_LABELS = ['一', '二', '三', '四', '五', '六', '日'];
-const TEMPLATE_ID = 'r6Mg96WyISh0jUGySUSC0eJ2W2uR6csoSNMyI8i4rvU';
+const WEEK_LABELS = ["一", "二", "三", "四", "五", "六", "日"];
+const TEMPLATE_ID = "r6Mg96WyISh0jUGySUSC0eJ2W2uR6csoSNMyI8i4rvU";
+
+const HOURS = Array.from({ length: 24 }, (_, i) =>
+  i.toString().padStart(2, "0"),
+);
+const MINUTES = ["00", "20", "40"];
+const TIME_RANGE = [HOURS, MINUTES];
 
 const ReminderPage = () => {
   const [list, setList] = useState<Reminder[]>([]);
   const [isAdding, setIsAdding] = useState(false);
-  const [content, setContent] = useState('该去跑步了！');
-  const [time, setTime] = useState('07:00');
+  const [content, setContent] = useState("该起来活动了！");
+  const [time, setTime] = useState("07:00");
   const [repeat, setRepeat] = useState(false);
   const [repeatDays, setRepeatDays] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +39,7 @@ const ReminderPage = () => {
 
   const handleRequestSubscribe = async (): Promise<boolean> => {
     if (!TEMPLATE_ID) {
-      Taro.showToast({ title: '提醒功能即将上线', icon: 'none' });
+      Taro.showToast({ title: "提醒功能即将上线", icon: "none" });
       return false;
     }
 
@@ -41,7 +47,7 @@ const ReminderPage = () => {
       Taro.requestSubscribeMessage({
         tmplIds: [TEMPLATE_ID],
         success: (res) => {
-          resolve(res[TEMPLATE_ID] === 'accept');
+          resolve(res[TEMPLATE_ID] === "accept");
         },
         fail: () => resolve(false),
       });
@@ -50,15 +56,15 @@ const ReminderPage = () => {
 
   const handleCreate = async () => {
     if (!content.trim()) {
-      Taro.showToast({ title: '请输入提醒内容', icon: 'none' });
+      Taro.showToast({ title: "请输入提醒内容", icon: "none" });
       return;
     }
 
     const accepted = await handleRequestSubscribe();
     if (!accepted) {
       Taro.showToast({
-        title: '需要授权通知才能提醒',
-        icon: 'none',
+        title: "需要授权通知才能提醒",
+        icon: "none",
       });
       return;
     }
@@ -74,7 +80,7 @@ const ReminderPage = () => {
       setIsAdding(false);
       resetForm();
       await loadReminders();
-      Taro.showToast({ title: '提醒已创建', icon: 'success' });
+      Taro.showToast({ title: "提醒已创建", icon: "success" });
     } catch {
       // request 层已 toast
     } finally {
@@ -93,8 +99,8 @@ const ReminderPage = () => {
       const accepted = await handleRequestSubscribe();
       if (!accepted) {
         Taro.showToast({
-          title: '需要授权通知才能开启',
-          icon: 'none',
+          title: "需要授权通知才能开启",
+          icon: "none",
         });
         return;
       }
@@ -110,8 +116,8 @@ const ReminderPage = () => {
 
   const handleDelete = async ({ id }: { id: number }) => {
     const { confirm } = await Taro.showModal({
-      title: '确认删除',
-      content: '删除后无法恢复',
+      title: "确认删除",
+      content: "删除后无法恢复",
     });
     if (!confirm) return;
 
@@ -130,8 +136,8 @@ const ReminderPage = () => {
   };
 
   const resetForm = () => {
-    setContent('该去跑步了！');
-    setTime('07:00');
+    setContent("该起来活动了！");
+    setTime("07:00");
     setRepeat(false);
     setRepeatDays([]);
   };
@@ -139,7 +145,7 @@ const ReminderPage = () => {
   return (
     <View className="page-reminder">
       <Text className="page-reminder__desc">
-        设置定时提醒，到点会通过微信服务通知提醒你
+        设置定时提醒，到点通过微信通知你
       </Text>
 
       {/* 提醒列表 */}
@@ -150,7 +156,8 @@ const ReminderPage = () => {
               <Text className="reminder-card__time">{item.time}</Text>
               {item.repeat && item.repeatDays.length > 0 && (
                 <Text className="reminder-card__days">
-                  每周{item.repeatDays.map((d) => WEEK_LABELS[d - 1]).join('、')}
+                  每周
+                  {item.repeatDays.map((d) => WEEK_LABELS[d - 1]).join("、")}
                 </Text>
               )}
               {!item.repeat && (
@@ -191,7 +198,7 @@ const ReminderPage = () => {
             <Text className="add-form__label">提醒内容</Text>
             <Input
               className="add-form__input"
-              placeholder="例：该去跑步了"
+              placeholder="例：该喝水了、开会提醒"
               placeholderClass="add-form__placeholder"
               maxlength={20}
               value={content}
@@ -201,7 +208,18 @@ const ReminderPage = () => {
 
           <View className="add-form__row">
             <Text className="add-form__label">提醒时间</Text>
-            <Picker mode="time" value={time} onChange={(e) => setTime(e.detail.value)}>
+            <Picker
+              mode="multiSelector"
+              range={TIME_RANGE}
+              value={[
+                HOURS.indexOf(time.split(":")[0]),
+                MINUTES.indexOf(time.split(":")[1]),
+              ]}
+              onChange={(e) => {
+                const [hIdx, mIdx] = e.detail.value as unknown as number[];
+                setTime(`${HOURS[hIdx]}:${MINUTES[mIdx]}`);
+              }}
+            >
               <Text className="add-form__time-btn">{time}</Text>
             </Picker>
           </View>
@@ -223,7 +241,7 @@ const ReminderPage = () => {
                 return (
                   <View
                     key={day}
-                    className={`day-chip ${isActive ? 'day-chip--active' : ''}`}
+                    className={`day-chip ${isActive ? "day-chip--active" : ""}`}
                     onClick={() => toggleDay({ day })}
                   >
                     <Text className="day-chip__text">{label}</Text>
@@ -244,11 +262,11 @@ const ReminderPage = () => {
               <Text className="add-form__cancel-text">取消</Text>
             </View>
             <View
-              className={`add-form__submit ${isLoading ? 'add-form__submit--loading' : ''}`}
+              className={`add-form__submit ${isLoading ? "add-form__submit--loading" : ""}`}
               onClick={isLoading ? undefined : handleCreate}
             >
               <Text className="add-form__submit-text">
-                {isLoading ? '创建中...' : '创建提醒'}
+                {isLoading ? "创建中..." : "创建提醒"}
               </Text>
             </View>
           </View>

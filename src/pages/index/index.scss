@@ -2,9 +2,7 @@
 @import '../../styles/mixins.scss';
 
 .home {
-  min-height: 100vh;
-  padding: $spacing-sm $spacing-lg;
-  padding-bottom: calc($spacing-xxl + 100px);
+  padding: $spacing-sm $spacing-lg $spacing-xxl;
 }
 
 // ========== 统计区域 ==========
