@@ -17,6 +17,12 @@
 
 .reminder-card {
   margin-bottom: $spacing-md;
+  transition: opacity 0.2s;
+
+  &--busy {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 
   &__top {
     @include flex-between;
@@ -172,6 +178,35 @@
       color: #fff;
       font-weight: 600;
     }
+  }
+}
+
+// ========== 骨架屏 ==========
+
+.skeleton {
+  background: $color-bg-card-hover;
+  border-radius: $radius-sm;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+
+  &--lg {
+    width: 200px;
+    height: 60px;
+  }
+
+  &--md {
+    width: 60%;
+    height: 28px;
+    margin-top: $spacing-sm;
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
   }
 }
 

@@ -23,6 +23,17 @@ const ReminderPage = () => {
   const [repeat, setRepeat] = useState(false);
   const [repeatDays, setRepeatDays] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [listLoading, setListLoading] = useState(true);
+  const [busyIds, setBusyIds] = useState<Set<number>>(new Set());
+
+  const markBusy = ({ id }: { id: number }) =>
+    setBusyIds((prev) => new Set(prev).add(id));
+  const unmarkBusy = ({ id }: { id: number }) =>
+    setBusyIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
 
   useDidShow(() => {
     loadReminders();
@@ -34,6 +45,8 @@ const ReminderPage = () => {
       setList(data);
     } catch {
       // request 层已 toast
+    } finally {
+      setListLoading(false);
     }
   };
 
@@ -106,11 +119,14 @@ const ReminderPage = () => {
       }
     }
 
+    markBusy({ id: reminder.id });
     try {
       await reminderApi.update({ id: reminder.id, enabled });
       await loadReminders();
     } catch {
       // request 层已 toast
+    } finally {
+      unmarkBusy({ id: reminder.id });
     }
   };
 
@@ -121,11 +137,14 @@ const ReminderPage = () => {
     });
     if (!confirm) return;
 
+    markBusy({ id });
     try {
       await reminderApi.remove({ id });
       await loadReminders();
     } catch {
       // request 层已 toast
+    } finally {
+      unmarkBusy({ id });
     }
   };
 
@@ -148,44 +167,67 @@ const ReminderPage = () => {
         设置定时提醒，到点通过微信通知你
       </Text>
 
-      {/* 提醒列表 */}
-      {list.map((item) => (
-        <Card key={item.id} className="reminder-card">
-          <View className="reminder-card__top">
-            <View className="reminder-card__time-wrap">
-              <Text className="reminder-card__time">{item.time}</Text>
-              {item.repeat && item.repeatDays.length > 0 && (
-                <Text className="reminder-card__days">
-                  每周
-                  {item.repeatDays.map((d) => WEEK_LABELS[d - 1]).join("、")}
-                </Text>
-              )}
-              {!item.repeat && (
-                <Text className="reminder-card__days">单次提醒</Text>
-              )}
+      {/* 骨架屏 */}
+      {listLoading &&
+        [1, 2].map((i) => (
+          <Card key={i} className="reminder-card">
+            <View className="reminder-card__top">
+              <View className="skeleton skeleton--lg" />
             </View>
-            <Switch
-              checked={item.enabled}
-              color="#f3799e"
-              onChange={(e) =>
-                handleToggle({
-                  reminder: item,
-                  enabled: e.detail.value,
-                })
-              }
-            />
-          </View>
-          <Text className="reminder-card__content">{item.content}</Text>
-          <View
-            className="reminder-card__delete"
-            onClick={() => handleDelete({ id: item.id })}
-          >
-            <Text className="reminder-card__delete-text">删除</Text>
-          </View>
-        </Card>
-      ))}
+            <View className="skeleton skeleton--md" />
+          </Card>
+        ))}
 
-      {list.length === 0 && !isAdding && (
+      {/* 提醒列表 */}
+      {!listLoading &&
+        list.map((item) => {
+          const busy = busyIds.has(item.id);
+          return (
+            <Card
+              key={item.id}
+              className={`reminder-card ${busy ? "reminder-card--busy" : ""}`}
+            >
+              <View className="reminder-card__top">
+                <View className="reminder-card__time-wrap">
+                  <Text className="reminder-card__time">{item.time}</Text>
+                  {item.repeat && item.repeatDays.length > 0 && (
+                    <Text className="reminder-card__days">
+                      每周
+                      {item.repeatDays
+                        .map((d) => WEEK_LABELS[d - 1])
+                        .join("、")}
+                    </Text>
+                  )}
+                  {!item.repeat && (
+                    <Text className="reminder-card__days">单次提醒</Text>
+                  )}
+                </View>
+                <Switch
+                  checked={item.enabled}
+                  disabled={busy}
+                  color="#f3799e"
+                  onChange={(e) =>
+                    handleToggle({
+                      reminder: item,
+                      enabled: e.detail.value,
+                    })
+                  }
+                />
+              </View>
+              <Text className="reminder-card__content">{item.content}</Text>
+              <View
+                className="reminder-card__delete"
+                onClick={busy ? undefined : () => handleDelete({ id: item.id })}
+              >
+                <Text className="reminder-card__delete-text">
+                  {busy ? "处理中..." : "删除"}
+                </Text>
+              </View>
+            </Card>
+          );
+        })}
+
+      {!listLoading && list.length === 0 && !isAdding && (
         <View className="empty-hint">
           <Text className="empty-hint__text">还没有提醒，点击下方添加</Text>
         </View>
