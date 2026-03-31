@@ -3,7 +3,8 @@ import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
 import { reminderApi } from "../../apis/reminder";
 import { Reminder } from "../../apis/reminder/types";
-import { Card } from "../../components";
+import { Card, Skeleton } from "../../components";
+import { useBusyIds } from "../../hooks";
 import "./index.scss";
 
 const WEEK_LABELS = ["一", "二", "三", "四", "五", "六", "日"];
@@ -24,16 +25,7 @@ const ReminderPage = () => {
   const [repeatDays, setRepeatDays] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
-  const [busyIds, setBusyIds] = useState<Set<number>>(new Set());
-
-  const markBusy = ({ id }: { id: number }) =>
-    setBusyIds((prev) => new Set(prev).add(id));
-  const unmarkBusy = ({ id }: { id: number }) =>
-    setBusyIds((prev) => {
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
+  const { isBusy, markBusy, unmarkBusy } = useBusyIds();
 
   useDidShow(() => {
     loadReminders();
@@ -172,16 +164,16 @@ const ReminderPage = () => {
         [1, 2].map((i) => (
           <Card key={i} className="reminder-card">
             <View className="reminder-card__top">
-              <View className="skeleton skeleton--lg" />
+              <Skeleton size="lg" />
             </View>
-            <View className="skeleton skeleton--md" />
+            <Skeleton size="md" />
           </Card>
         ))}
 
       {/* 提醒列表 */}
       {!listLoading &&
         list.map((item) => {
-          const busy = busyIds.has(item.id);
+          const busy = isBusy({ id: item.id });
           return (
             <Card
               key={item.id}

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { dashboardApi } from '../../apis/dashboard';
 import { DashboardResult, PeriodStats } from '../../apis/dashboard/types';
 import { Activity } from '../../apis/activity/types';
-import { Card, Empty } from '../../components';
+import { Card, Empty, Skeleton } from '../../components';
 import { STORAGE_KEYS } from '../../constants/storage';
 import {
   formatPace,
@@ -196,13 +196,13 @@ const StatItem = ({
 const StatsCardSkeleton = () => (
   <Card className="stats-card">
     <View className="stats-card__hero">
-      <View className="skeleton skeleton--lg" />
+      <Skeleton size="lg" />
     </View>
     <View className="stats-card__grid">
       {[1, 2, 3, 4].map((i) => (
         <View key={i} className="stat-item">
-          <View className="skeleton skeleton--sm" />
-          <View className="skeleton skeleton--xs" />
+          <Skeleton size="sm" />
+          <Skeleton size="xs" />
         </View>
       ))}
     </View>
