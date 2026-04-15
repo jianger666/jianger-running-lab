@@ -44,34 +44,51 @@ const FoodCalorie = () => {
     }
   };
 
-  const handleTakePhoto = () => {
-    Taro.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['camera', 'album'],
-      success: async (res) => {
-        const filePath = res.tempFilePaths[0];
-        setRecognizing(true);
-
-        try {
-          const fs = Taro.getFileSystemManager();
-          const base64 = fs.readFileSync(filePath, 'base64') as string;
-          const result = await foodApi.recognize({ image: base64 });
-
-          if (result.foods.length === 0) {
-            Taro.showToast({ title: '未识别到食物', icon: 'none' });
-            return;
-          }
-
-          setRecognized(result.foods);
-          guessMealType();
-        } catch {
-          Taro.showToast({ title: '识别失败，请重试', icon: 'none' });
-        } finally {
-          setRecognizing(false);
-        }
-      },
+  const readFileAsBase64 = ({ filePath }: { filePath: string }) =>
+    new Promise<string>((resolve, reject) => {
+      Taro.getFileSystemManager().readFile({
+        filePath,
+        encoding: 'base64',
+        success: (res) => resolve(res.data as string),
+        fail: reject,
+      });
     });
+
+  const handleTakePhoto = async () => {
+    try {
+      const chooseRes = await Taro.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['camera', 'album'],
+      });
+
+      const filePath = chooseRes.tempFilePaths[0];
+      setRecognizing(true);
+
+      const compressed = await Taro.compressImage({
+        src: filePath,
+        quality: 60,
+      });
+
+      const base64 = await readFileAsBase64({
+        filePath: compressed.tempFilePath,
+      });
+      const result = await foodApi.recognize({ image: base64 });
+
+      if (result.foods.length === 0) {
+        Taro.showToast({ title: '未识别到食物', icon: 'none' });
+        return;
+      }
+
+      setRecognized(result.foods);
+      guessMealType();
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : '识别失败，请重试';
+      Taro.showToast({ title: msg, icon: 'none' });
+    } finally {
+      setRecognizing(false);
+    }
   };
 
   const guessMealType = () => {
