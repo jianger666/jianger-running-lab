@@ -1,0 +1,431 @@
+@import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
+
+.page-food {
+  padding: $spacing-md $spacing-lg $spacing-xxl;
+  padding-bottom: 160px;
+}
+
+// 热量总览卡片
+.calorie-card {
+  text-align: center;
+  margin-bottom: $spacing-sm;
+
+  &__hero {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  &__number {
+    font-size: 80px;
+    font-weight: 700;
+    color: $color-primary;
+    line-height: 1.1;
+  }
+
+  &__unit {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+
+  &__label {
+    display: block;
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+    margin-top: 4px;
+  }
+
+  &__meals {
+    display: flex;
+    justify-content: space-around;
+    margin-top: $spacing-md;
+    padding-top: $spacing-md;
+    border-top: 1px solid $color-border;
+  }
+
+  &__meal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__meal-icon {
+    font-size: $font-size-lg;
+  }
+
+  &__meal-label {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  &__meal-value {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    font-weight: 600;
+  }
+}
+
+// 营养素条
+.nutrient-card {
+  margin-bottom: $spacing-sm;
+}
+
+.nutrient-bar {
+  display: flex;
+  height: 16px;
+  border-radius: $radius-round;
+  overflow: hidden;
+  background: $color-bg-input;
+
+  &__segment {
+    height: 100%;
+    transition: width 0.3s ease;
+
+    &--protein {
+      background: #4ecdc4;
+    }
+    &--fat {
+      background: #ff6b6b;
+    }
+    &--carbs {
+      background: #ffd93d;
+    }
+  }
+}
+
+.nutrient-legend {
+  display: flex;
+  justify-content: space-around;
+  margin-top: $spacing-sm;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__label {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  &__value {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    font-weight: 600;
+  }
+}
+
+// 跑步消耗提示
+.run-hint {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-sm;
+
+  &__icon {
+    font-size: $font-size-xl;
+  }
+
+  &__text-wrap {
+    flex: 1;
+  }
+
+  &__text {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+
+  &__distance {
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-primary;
+  }
+
+  &__sub {
+    display: block;
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-top: 4px;
+  }
+}
+
+// 食物记录列表
+.records-section {
+  margin-top: $spacing-md;
+}
+
+.section-title {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.food-item {
+  margin-bottom: $spacing-xs;
+
+  &--busy {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &__top {
+    @include flex-between;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__meal {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  &__name {
+    display: block;
+    font-size: $font-size-base;
+    font-weight: 600;
+    color: $color-text-primary;
+    margin-top: 4px;
+  }
+
+  &__calorie {
+    font-size: $font-size-md;
+    font-weight: 700;
+    color: $color-primary;
+    flex-shrink: 0;
+    margin-left: $spacing-sm;
+  }
+
+  &__bottom {
+    @include flex-between;
+    margin-top: $spacing-xs;
+  }
+
+  &__nutrient {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    flex: 1;
+  }
+
+  &__delete {
+    font-size: $font-size-xs;
+    color: $color-danger;
+    flex-shrink: 0;
+  }
+}
+
+.empty-hint {
+  @include flex-center;
+  padding: $spacing-xl 0;
+
+  &__text {
+    font-size: $font-size-sm;
+    color: $color-text-placeholder;
+  }
+}
+
+// 识别结果弹层
+.recognize-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+
+  &__mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  &__content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: $color-bg-card;
+    border-radius: $radius-xl $radius-xl 0 0;
+    padding: $spacing-lg;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  &__title {
+    display: block;
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-text-primary;
+    margin-bottom: $spacing-md;
+  }
+
+  &__list {
+    margin-bottom: $spacing-md;
+  }
+
+  &__total {
+    @include flex-between;
+    padding: $spacing-sm 0;
+    border-top: 1px solid $color-border;
+    margin-bottom: $spacing-md;
+  }
+
+  &__total-label {
+    font-size: $font-size-md;
+    color: $color-text-secondary;
+  }
+
+  &__total-value {
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-primary;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  &__cancel {
+    flex: 1;
+    @include flex-center;
+    padding: $spacing-sm 0;
+    border-radius: $radius-md;
+    background: $color-bg-input;
+  }
+
+  &__cancel-text {
+    font-size: $font-size-base;
+    color: $color-text-secondary;
+  }
+
+  &__save {
+    flex: 2;
+    @include flex-center;
+    padding: $spacing-sm 0;
+    border-radius: $radius-md;
+    background: $color-primary;
+  }
+
+  &__save-text {
+    font-size: $font-size-base;
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+.recognize-food {
+  @include flex-between;
+  padding: $spacing-sm 0;
+  border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__left {
+    flex: 1;
+  }
+
+  &__name {
+    display: block;
+    font-size: $font-size-base;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+
+  &__detail {
+    display: block;
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-top: 4px;
+  }
+
+  &__cal {
+    font-size: $font-size-md;
+    font-weight: 700;
+    color: $color-primary;
+    flex-shrink: 0;
+    margin-left: $spacing-sm;
+  }
+}
+
+// 餐次选择
+.meal-picker {
+  margin-bottom: $spacing-md;
+
+  &__label {
+    display: block;
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__options {
+    display: flex;
+    gap: $spacing-xs;
+  }
+}
+
+.meal-chip {
+  flex: 1;
+  @include flex-center;
+  padding: $spacing-xs 0;
+  border-radius: $radius-md;
+  background: $color-bg-input;
+
+  &--active {
+    background: rgba($color-primary, 0.2);
+  }
+
+  &__text {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+
+  &--active &__text {
+    color: $color-primary;
+    font-weight: 600;
+  }
+}
+
+// FAB 拍照按钮
+.fab-camera {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  @include flex-center;
+  padding: $spacing-sm $spacing-xl;
+  background: $color-primary;
+  border-radius: $radius-round;
+  box-shadow: 0 8px 24px rgba($color-primary, 0.4);
+  z-index: 100;
+
+  &--loading {
+    opacity: 0.7;
+  }
+
+  &__text {
+    font-size: $font-size-base;
+    color: #fff;
+    font-weight: 600;
+  }
+}

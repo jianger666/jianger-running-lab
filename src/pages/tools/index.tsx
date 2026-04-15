@@ -1,5 +1,5 @@
 import { View, Text } from '@tarojs/components';
-import { ClockOutlined, NotesOutlined } from '@taroify/icons';
+import { ClockOutlined, NotesOutlined, PhotoOutlined } from '@taroify/icons';
 import Taro from '@tarojs/taro';
 import type { ReactNode } from 'react';
 import './index.scss';
@@ -13,6 +13,13 @@ interface ToolItem {
 }
 
 const TOOLS: ToolItem[] = [
+  {
+    key: 'foodCalorie',
+    title: '拍照计热量',
+    desc: 'AI 识别食物热量',
+    path: '/pages/foodCalorie/index',
+    icon: <PhotoOutlined size={24} color="#f3799e" />,
+  },
   {
     key: 'paceTable',
     title: '马拉松配速表',

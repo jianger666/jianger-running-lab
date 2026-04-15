@@ -1,0 +1,81 @@
+@import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
+
+.page-profile-edit {
+  padding: $spacing-md $spacing-lg $spacing-xxl;
+
+  &__desc {
+    display: block;
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.form-card {
+  margin-bottom: $spacing-md;
+}
+
+.form-row {
+  @include flex-between;
+  padding: $spacing-md 0;
+  border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__label {
+    font-size: $font-size-base;
+    color: $color-text-primary;
+    flex-shrink: 0;
+    width: 200px;
+  }
+
+  &__input {
+    flex: 1;
+    text-align: right;
+    font-size: $font-size-base;
+    color: $color-text-primary;
+    background: transparent;
+    border: none;
+  }
+
+  &__picker {
+    font-size: $font-size-base;
+    color: $color-text-primary;
+  }
+
+  &__placeholder {
+    color: $color-text-placeholder;
+  }
+}
+
+.form-tips {
+  margin-bottom: $spacing-lg;
+  padding: 0 $spacing-xs;
+
+  &__text {
+    display: block;
+    font-size: $font-size-xs;
+    color: $color-text-placeholder;
+    line-height: 1.8;
+  }
+}
+
+.save-btn {
+  @include flex-center;
+  padding: $spacing-md 0;
+  background: $color-primary;
+  border-radius: $radius-md;
+
+  &--loading {
+    opacity: 0.7;
+  }
+
+  &__text {
+    font-size: $font-size-md;
+    color: #fff;
+    font-weight: 600;
+  }
+}

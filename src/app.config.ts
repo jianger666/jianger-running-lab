@@ -9,6 +9,8 @@ export default defineAppConfig({
     'pages/watchBind/index',
     'pages/paceTable/index',
     'pages/reminder/index',
+    'pages/foodCalorie/index',
+    'pages/profileEdit/index',
   ],
   window: {
     backgroundTextStyle: 'light',

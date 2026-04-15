@@ -1,7 +1,7 @@
 import { View, Text, Image, Button, Input } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import { useState } from 'react';
-import { Arrow, NotesOutlined, ClockOutlined } from '@taroify/icons';
+import { Arrow, NotesOutlined, ClockOutlined, UserOutlined } from '@taroify/icons';
 import './index.scss';
 
 const Profile = () => {
@@ -59,6 +59,16 @@ const Profile = () => {
       </View>
 
       <View className="menu-group">
+        <View
+          className="menu-item"
+          onClick={() =>
+            Taro.navigateTo({ url: '/pages/profileEdit/index' })
+          }
+        >
+          <UserOutlined size={20} color="#f3799e" />
+          <Text className="menu-item__text">身体信息</Text>
+          <Arrow size={16} color="#666" />
+        </View>
         <View
           className="menu-item"
           onClick={() =>
