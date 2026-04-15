@@ -55,24 +55,35 @@ const FoodCalorie = () => {
     });
 
   const handleTakePhoto = async () => {
+    let filePath: string;
+
     try {
-      const chooseRes = await Taro.chooseImage({
+      const res = await Taro.chooseMedia({
         count: 1,
-        sizeType: ['compressed'],
+        mediaType: ['image'],
         sourceType: ['camera', 'album'],
+        sizeType: ['compressed'],
       });
+      filePath = res.tempFiles[0].tempFilePath;
+    } catch {
+      return;
+    }
 
-      const filePath = chooseRes.tempFilePaths[0];
-      setRecognizing(true);
+    setRecognizing(true);
 
-      const compressed = await Taro.compressImage({
-        src: filePath,
-        quality: 60,
-      });
+    try {
+      let finalPath = filePath;
+      try {
+        const compressed = await Taro.compressImage({
+          src: filePath,
+          quality: 60,
+        });
+        finalPath = compressed.tempFilePath;
+      } catch {
+        // 压缩失败用原图
+      }
 
-      const base64 = await readFileAsBase64({
-        filePath: compressed.tempFilePath,
-      });
+      const base64 = await readFileAsBase64({ filePath: finalPath });
       const result = await foodApi.recognize({ image: base64 });
 
       if (result.foods.length === 0) {
@@ -83,6 +94,7 @@ const FoodCalorie = () => {
       setRecognized(result.foods);
       guessMealType();
     } catch (err) {
+      console.error('[foodCalorie] recognize error:', err);
       const msg =
         err instanceof Error ? err.message : '识别失败，请重试';
       Taro.showToast({ title: msg, icon: 'none' });
