@@ -1,13 +1,13 @@
-import { View, Text } from '@tarojs/components';
+import { View, Text, Image } from '@tarojs/components';
+import logo from '../../assets/logo.png';
 import './index.scss';
 
 const Index = () => {
   return (
     <View className="home">
       <View className="coming-soon">
-        <Text className="coming-soon__icon">🏃</Text>
-        <Text className="coming-soon__title">江耳跑步实验室</Text>
-        <Text className="coming-soon__desc">更多功能敬请期待...</Text>
+        <Image className="coming-soon__logo" src={logo} mode="aspectFit" />
+        <Text className="coming-soon__desc">敬请期待</Text>
       </View>
     </View>
   );

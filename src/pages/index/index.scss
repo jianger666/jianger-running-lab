@@ -14,19 +14,13 @@
   align-items: center;
   gap: $spacing-md;
 
-  &__icon {
-    font-size: 120px;
-    line-height: 1;
-  }
-
-  &__title {
-    font-size: $font-size-xl;
-    font-weight: 700;
-    color: $color-text-primary;
+  &__logo {
+    width: 200px;
+    height: 200px;
   }
 
   &__desc {
-    font-size: $font-size-md;
+    font-size: $font-size-lg;
     color: $color-text-tertiary;
   }
 }
