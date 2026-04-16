@@ -14,10 +14,22 @@
 .tool-card {
   display: flex;
   align-items: center;
+  position: relative;
   background: $color-bg-card;
   border-radius: $radius-lg;
   padding: $spacing-md;
   gap: $spacing-sm;
+}
+
+.tool-card__login-tag {
+  position: absolute;
+  top: $spacing-xs;
+  right: $spacing-xs;
+  font-size: 18px;
+  color: $color-text-placeholder;
+  background: $color-bg-input;
+  padding: 2px 8px;
+  border-radius: $radius-sm;
 }
 
 .tool-card__icon {

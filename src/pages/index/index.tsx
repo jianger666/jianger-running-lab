@@ -7,7 +7,7 @@ const Index = () => {
     <View className="home">
       <View className="coming-soon">
         <Image className="coming-soon__logo" src={logo} mode="aspectFit" />
-        <Text className="coming-soon__desc">敬请期待</Text>
+        <Text className="coming-soon__desc">首页功能还没想好，敬请期待</Text>
       </View>
     </View>
   );
