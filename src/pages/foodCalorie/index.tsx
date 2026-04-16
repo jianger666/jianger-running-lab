@@ -1,6 +1,11 @@
 import { View, Text, Input } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import { useState, useCallback } from 'react';
+import {
+  PhotoOutlined,
+  FireOutlined,
+  ClockOutlined,
+} from '@taroify/icons';
 import { foodApi } from '../../apis/food';
 import { DailySummary, FoodItem } from '../../apis/food/types';
 import { Card, Skeleton } from '../../components';
@@ -14,11 +19,11 @@ const MEAL_LABELS: Record<string, string> = {
   snack: '加餐',
 };
 
-const MEAL_ICONS: Record<string, string> = {
-  breakfast: '🌅',
-  lunch: '☀️',
-  dinner: '🌙',
-  snack: '🍪',
+const MEAL_COLORS: Record<string, string> = {
+  breakfast: '#ffa726',
+  lunch: '#f3799e',
+  dinner: '#7c4dff',
+  snack: '#4ecdc4',
 };
 
 const FoodCalorie = () => {
@@ -198,7 +203,7 @@ const FoodCalorie = () => {
 
           {daily.runDistanceNeeded !== null && (
             <Card className="run-hint">
-              <Text className="run-hint__icon">🏃</Text>
+              <FireOutlined className="run-hint__icon" />
               <View className="run-hint__text-wrap">
                 <Text className="run-hint__text">
                   今日摄入需跑
@@ -237,10 +242,18 @@ const FoodCalorie = () => {
               >
                 <View className="food-item__top">
                   <View className="food-item__info">
-                    <Text className="food-item__meal">
-                      {MEAL_ICONS[r.mealType || 'snack']}{' '}
-                      {MEAL_LABELS[r.mealType || 'snack']}
-                    </Text>
+                    <View className="food-item__meal">
+                      <View
+                        className="food-item__meal-dot"
+                        style={{
+                          background:
+                            MEAL_COLORS[r.mealType || 'snack'],
+                        }}
+                      />
+                      <Text className="food-item__meal-text">
+                        {MEAL_LABELS[r.mealType || 'snack']}
+                      </Text>
+                    </View>
                     <Text className="food-item__name">{r.name}</Text>
                   </View>
                   <Text className="food-item__calorie">{r.calorie} kcal</Text>
@@ -328,9 +341,7 @@ const FoodCalorie = () => {
                     className={`meal-chip ${mealType === key ? 'meal-chip--active' : ''}`}
                     onClick={() => setMealType(key)}
                   >
-                    <Text className="meal-chip__text">
-                      {MEAL_ICONS[key]} {label}
-                    </Text>
+                    <Text className="meal-chip__text">{label}</Text>
                   </View>
                 ))}
               </View>
@@ -360,8 +371,13 @@ const FoodCalorie = () => {
           className={`fab-camera ${recognizing ? 'fab-camera--loading' : ''}`}
           onClick={recognizing ? undefined : handleTakePhoto}
         >
+          {recognizing ? (
+            <ClockOutlined className="fab-camera__icon" />
+          ) : (
+            <PhotoOutlined className="fab-camera__icon" />
+          )}
           <Text className="fab-camera__text">
-            {recognizing ? '识别中...' : '📷 拍照记录'}
+            {recognizing ? '识别中...' : '拍照记录'}
           </Text>
         </View>
       )}
@@ -379,7 +395,10 @@ const CalorieSummaryCard = ({ daily }: { daily: DailySummary }) => (
     <View className="calorie-card__meals">
       {Object.entries(MEAL_LABELS).map(([key, label]) => (
         <View key={key} className="calorie-card__meal">
-          <Text className="calorie-card__meal-icon">{MEAL_ICONS[key]}</Text>
+          <View
+            className="calorie-card__meal-dot"
+            style={{ background: MEAL_COLORS[key] }}
+          />
           <Text className="calorie-card__meal-label">{label}</Text>
           <Text className="calorie-card__meal-value">
             {daily.mealSummary[key as keyof typeof daily.mealSummary]} kcal

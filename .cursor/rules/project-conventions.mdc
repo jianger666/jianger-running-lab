@@ -51,3 +51,7 @@ alwaysApply: true
 ## 类型规范
 - 接口返回的状态字段必须提取为 enum
 - 非全局通用的 type 和对应的 API 放在一起
+
+## 图标规范
+- 使用 `@taroify/icons` 图标库，禁止在 UI 中使用 emoji 作为图标
+- 引用方式：`import { XxxOutlined } from '@taroify/icons'`
