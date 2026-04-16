@@ -41,6 +41,8 @@ const TOOLS: ToolItem[] = [
 ];
 
 const Tools = () => {
+  const isLoggedIn = !!Taro.getStorageSync(STORAGE_KEYS.TOKEN);
+
   const handleNavigate = ({
     path,
     requireLogin,
@@ -48,7 +50,7 @@ const Tools = () => {
     path: string;
     requireLogin?: boolean;
   }) => {
-    if (requireLogin && !Taro.getStorageSync(STORAGE_KEYS.TOKEN)) {
+    if (requireLogin && !isLoggedIn) {
       Taro.showToast({ title: '请先登录', icon: 'none' });
       Taro.switchTab({ url: '/pages/profile/index' });
       return;
@@ -75,7 +77,7 @@ const Tools = () => {
               <Text className="tool-card__title">{tool.title}</Text>
               <Text className="tool-card__desc">{tool.desc}</Text>
             </View>
-            {tool.requireLogin && (
+            {tool.requireLogin && !isLoggedIn && (
               <Text className="tool-card__login-tag">需登录</Text>
             )}
           </View>
