@@ -332,7 +332,6 @@
 }
 
 .recognize-food {
-  @include flex-between;
   padding: $spacing-sm 0;
   border-bottom: 1px solid $color-border;
 
@@ -340,22 +339,14 @@
     border-bottom: none;
   }
 
-  &__left {
-    flex: 1;
+  &__header {
+    @include flex-between;
   }
 
   &__name {
-    display: block;
     font-size: $font-size-base;
     font-weight: 600;
     color: $color-text-primary;
-  }
-
-  &__detail {
-    display: block;
-    font-size: $font-size-xs;
-    color: $color-text-tertiary;
-    margin-top: 4px;
   }
 
   &__cal {
@@ -363,7 +354,43 @@
     font-weight: 700;
     color: $color-primary;
     flex-shrink: 0;
-    margin-left: $spacing-sm;
+  }
+
+  &__weight-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    margin-top: $spacing-xs;
+  }
+
+  &__weight-label {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    flex-shrink: 0;
+  }
+
+  &__weight-input {
+    width: 120px;
+    height: 48px;
+    font-size: $font-size-sm;
+    color: $color-text-primary;
+    background: $color-bg-input;
+    border-radius: $radius-sm;
+    padding: 0 $spacing-xs;
+    text-align: center;
+  }
+
+  &__weight-unit {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    flex-shrink: 0;
+  }
+
+  &__detail {
+    display: block;
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-top: 4px;
   }
 }
 

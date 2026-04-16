@@ -1,6 +1,6 @@
-import { View, Text } from '@tarojs/components';
+import { View, Text, Input } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { foodApi } from '../../apis/food';
 import { DailySummary, FoodItem } from '../../apis/food/types';
 import { Card, Skeleton } from '../../components';
@@ -26,8 +26,37 @@ const FoodCalorie = () => {
   const [loading, setLoading] = useState(true);
   const [recognizing, setRecognizing] = useState(false);
   const [recognized, setRecognized] = useState<FoodItem[] | null>(null);
+  const [originalRecognized, setOriginalRecognized] = useState<
+    FoodItem[] | null
+  >(null);
   const [mealType, setMealType] = useState('lunch');
   const { isBusy, markBusy, unmarkBusy } = useBusyIds();
+
+  const handleWeightChange = useCallback(
+    ({ index, newWeight }: { index: number; newWeight: number }) => {
+      if (!recognized || !originalRecognized) return;
+      const orig = originalRecognized[index];
+      if (!orig || orig.weight <= 0) return;
+      const ratio = newWeight / orig.weight;
+      setRecognized((prev) =>
+        prev
+          ? prev.map((f, i) =>
+              i === index
+                ? {
+                    ...f,
+                    weight: newWeight,
+                    calorie: Math.round(orig.calorie * ratio),
+                    protein: Math.round(orig.protein * ratio * 10) / 10,
+                    fat: Math.round(orig.fat * ratio * 10) / 10,
+                    carbs: Math.round(orig.carbs * ratio * 10) / 10,
+                  }
+                : f,
+            )
+          : prev,
+      );
+    },
+    [recognized, originalRecognized],
+  );
 
   useDidShow(() => {
     fetchDaily();
@@ -91,6 +120,7 @@ const FoodCalorie = () => {
         return;
       }
 
+      setOriginalRecognized(result.foods.map((f) => ({ ...f })));
       setRecognized(result.foods);
       guessMealType();
     } catch (err) {
@@ -128,6 +158,7 @@ const FoodCalorie = () => {
         mealType,
       });
       setRecognized(null);
+      setOriginalRecognized(null);
       Taro.showToast({ title: '已记录', icon: 'success' });
       await fetchDaily();
     } catch {
@@ -241,21 +272,41 @@ const FoodCalorie = () => {
       {/* 识别结果弹层 */}
       {recognized && (
         <View className="recognize-modal">
-          <View className="recognize-modal__mask" onClick={() => setRecognized(null)} />
+          <View
+            className="recognize-modal__mask"
+            onClick={() => {
+              setRecognized(null);
+              setOriginalRecognized(null);
+            }}
+          />
           <View className="recognize-modal__content">
             <Text className="recognize-modal__title">识别结果</Text>
             <View className="recognize-modal__list">
               {recognized.map((food, i) => (
                 <View key={i} className="recognize-food">
-                  <View className="recognize-food__left">
+                  <View className="recognize-food__header">
                     <Text className="recognize-food__name">{food.name}</Text>
-                    <Text className="recognize-food__detail">
-                      {food.weight}g · 蛋白质{food.protein}g · 脂肪{food.fat}g
-                      · 碳水{food.carbs}g
+                    <Text className="recognize-food__cal">
+                      {food.calorie} kcal
                     </Text>
                   </View>
-                  <Text className="recognize-food__cal">
-                    {food.calorie} kcal
+                  <View className="recognize-food__weight-row">
+                    <Text className="recognize-food__weight-label">重量</Text>
+                    <Input
+                      className="recognize-food__weight-input"
+                      type="digit"
+                      value={String(food.weight)}
+                      onInput={(e) =>
+                        handleWeightChange({
+                          index: i,
+                          newWeight: Number(e.detail.value) || 0,
+                        })
+                      }
+                    />
+                    <Text className="recognize-food__weight-unit">g</Text>
+                  </View>
+                  <Text className="recognize-food__detail">
+                    蛋白质{food.protein}g · 脂肪{food.fat}g · 碳水{food.carbs}g
                   </Text>
                 </View>
               ))}
@@ -288,7 +339,10 @@ const FoodCalorie = () => {
             <View className="recognize-modal__actions">
               <View
                 className="recognize-modal__cancel"
-                onClick={() => setRecognized(null)}
+                onClick={() => {
+                  setRecognized(null);
+                  setOriginalRecognized(null);
+                }}
               >
                 <Text className="recognize-modal__cancel-text">取消</Text>
               </View>
