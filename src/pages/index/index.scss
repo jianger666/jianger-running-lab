@@ -2,231 +2,31 @@
 @import '../../styles/mixins.scss';
 
 .home {
-  padding: $spacing-sm $spacing-lg $spacing-xxl;
-}
-
-// ========== 统计区域 ==========
-
-.stats-section {
-  margin-bottom: $spacing-lg;
-}
-
-.stats-tabs {
+  min-height: 100vh;
   display: flex;
   align-items: center;
-  margin-bottom: $spacing-md;
-  gap: $spacing-xs;
+  justify-content: center;
 }
 
-.stats-tab {
-  padding: $spacing-xs $spacing-md;
-  border-radius: $radius-round;
-  background: $color-bg-card;
-  transition: all 0.2s;
+.coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-md;
 
-  &--active {
-    background: $color-primary;
-  }
-
-  &__text {
-    font-size: $font-size-sm;
-    color: $color-text-tertiary;
-
-    .stats-tab--active & {
-      color: $color-text-primary;
-      font-weight: 600;
-    }
-  }
-}
-
-.stats-sync {
-  margin-left: auto;
-  padding: $spacing-xs $spacing-md;
-  border-radius: $radius-round;
-  border: 1px solid $color-border;
-
-  &__text {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-  }
-}
-
-// ========== 统计卡片 ==========
-
-.stats-card {
-  &__hero {
-    @include flex-between;
-    margin-bottom: $spacing-lg;
-    padding-bottom: $spacing-lg;
-    border-bottom: 1px solid $color-border;
-  }
-
-  &__hero-left {
-    display: flex;
-    align-items: baseline;
-    gap: $spacing-xs;
-  }
-
-  &__distance {
-    font-size: $font-size-hero;
-    font-weight: 800;
-    color: $color-primary;
+  &__icon {
+    font-size: 120px;
     line-height: 1;
-    letter-spacing: -2px;
   }
-
-  &__unit {
-    font-size: $font-size-lg;
-    color: $color-primary-light;
-    font-weight: 600;
-  }
-
-  &__trend {
-    text-align: right;
-  }
-
-  &__trend-text {
-    display: block;
-    font-size: $font-size-sm;
-    font-weight: 600;
-
-    &--up {
-      color: $color-success;
-    }
-
-    &--down {
-      color: $color-danger;
-    }
-  }
-
-  &__trend-label {
-    font-size: $font-size-xs;
-    color: $color-text-tertiary;
-  }
-
-  &__grid {
-    display: flex;
-    justify-content: space-between;
-  }
-}
-
-.stat-item {
-  text-align: center;
-  flex: 1;
-
-  &__row {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 2px;
-  }
-
-  &__value {
-    font-size: $font-size-md;
-    font-weight: 700;
-    color: $color-text-primary;
-  }
-
-  &__suffix {
-    font-size: $font-size-xs;
-    color: $color-text-tertiary;
-  }
-
-  &__label {
-    display: block;
-    font-size: $font-size-xs;
-    color: $color-text-tertiary;
-    margin-top: 4px;
-  }
-}
-
-// ========== 最近训练 ==========
-
-.recent-section {
-  margin-top: $spacing-lg;
-}
-
-.section-header {
-  @include flex-between;
-  margin-bottom: $spacing-md;
 
   &__title {
-    font-size: $font-size-lg;
+    font-size: $font-size-xl;
     font-weight: 700;
     color: $color-text-primary;
   }
 
-  &__more {
-    font-size: $font-size-sm;
-    color: $color-primary;
-  }
-}
-
-// ========== 活动卡片 ==========
-
-.activity-item {
-  margin-bottom: $spacing-md;
-
-  &__header {
-    @include flex-between;
-    margin-bottom: $spacing-md;
-  }
-
-  &__tag {
-    background: rgba($color-primary, 0.15);
-    border-radius: $radius-sm;
-    padding: 2px $spacing-sm;
-  }
-
-  &__type {
-    font-size: $font-size-sm;
-    font-weight: 600;
-    color: $color-primary;
-  }
-
-  &__date {
-    font-size: $font-size-sm;
+  &__desc {
+    font-size: $font-size-md;
     color: $color-text-tertiary;
   }
-
-  &__metrics {
-    display: flex;
-    justify-content: space-between;
-  }
 }
-
-.metric {
-  text-align: center;
-  flex: 1;
-
-  &__row {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 2px;
-  }
-
-  &__value {
-    font-size: $font-size-lg;
-    font-weight: 700;
-    color: $color-text-primary;
-
-    &--highlight {
-      color: $color-primary;
-      font-size: $font-size-xl;
-    }
-  }
-
-  &__suffix {
-    font-size: $font-size-xs;
-    color: $color-text-tertiary;
-  }
-
-  &__label {
-    display: block;
-    font-size: $font-size-xs;
-    color: $color-text-tertiary;
-    margin-top: 2px;
-  }
-}
-
