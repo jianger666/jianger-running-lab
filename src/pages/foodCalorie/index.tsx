@@ -1,13 +1,9 @@
-import { View, Text, Input } from '@tarojs/components';
+import { View, Text, Input, ScrollView } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import { useState, useCallback } from 'react';
-import {
-  PhotoOutlined,
-  FireOutlined,
-  ClockOutlined,
-} from '@taroify/icons';
+import { PhotoOutlined, FireOutlined, UserOutlined } from '@taroify/icons';
 import { foodApi } from '../../apis/food';
-import { DailySummary, FoodItem } from '../../apis/food/types';
+import { DailySummary, FoodItem, ExerciseEquivalent } from '../../apis/food/types';
 import { Card, Skeleton } from '../../components';
 import { useBusyIds } from '../../hooks';
 import './index.scss';
@@ -37,9 +33,14 @@ const FoodCalorie = () => {
   const [mealType, setMealType] = useState('lunch');
   const { isBusy, markBusy, unmarkBusy } = useBusyIds();
 
+  const clearRecognition = useCallback(() => {
+    setRecognized(null);
+    setOriginalRecognized(null);
+  }, []);
+
   const handleWeightChange = useCallback(
     ({ index, newWeight }: { index: number; newWeight: number }) => {
-      if (!recognized || !originalRecognized) return;
+      if (!originalRecognized) return;
       const orig = originalRecognized[index];
       if (!orig || orig.weight <= 0) return;
       const ratio = newWeight / orig.weight;
@@ -60,7 +61,7 @@ const FoodCalorie = () => {
           : prev,
       );
     },
-    [recognized, originalRecognized],
+    [originalRecognized],
   );
 
   useDidShow(() => {
@@ -162,8 +163,7 @@ const FoodCalorie = () => {
         })),
         mealType,
       });
-      setRecognized(null);
-      setOriginalRecognized(null);
+      clearRecognition();
       Taro.showToast({ title: '已记录', icon: 'success' });
       await fetchDaily();
     } catch {
@@ -201,28 +201,44 @@ const FoodCalorie = () => {
           <CalorieSummaryCard daily={daily} />
           <NutrientBar daily={daily} />
 
-          {daily.runDistanceNeeded !== null && (
-            <Card className="run-hint">
-              <FireOutlined className="run-hint__icon" />
-              <View className="run-hint__text-wrap">
-                <Text className="run-hint__text">
-                  今日摄入需跑
-                  <Text className="run-hint__distance">
-                    {' '}
-                    {daily.runDistanceNeeded}{' '}
-                  </Text>
-                  公里消耗
+          {!daily.bmr && (
+            <Card
+              className="body-info-hint"
+              onClick={() =>
+                Taro.navigateTo({ url: '/pages/profileEdit/index' })
+              }
+            >
+              <UserOutlined className="body-info-hint__icon" />
+              <View className="body-info-hint__text-wrap">
+                <Text className="body-info-hint__title">
+                  设置身体信息，解锁更多功能
                 </Text>
-                {daily.calorieBalance !== null && daily.bmr && (
-                  <Text className="run-hint__sub">
-                    基础代谢 {daily.bmr} kcal ·{' '}
-                    {daily.calorieBalance > 0
-                      ? `超出 ${daily.calorieBalance} kcal`
-                      : `还剩 ${Math.abs(daily.calorieBalance)} kcal`}
-                  </Text>
-                )}
+                <Text className="body-info-hint__desc">
+                  填写身高体重后可计算 BMI、BMR 和每日消耗建议
+                </Text>
               </View>
             </Card>
+          )}
+
+          {daily.exerciseEquivalents && (
+            <View className="exercise-section">
+              <Text className="exercise-section__title">
+                要消耗这 {daily.totalCalorie} kcal，大约需要
+              </Text>
+              {daily.calorieBalance !== null && daily.bmr && (
+                <Text className="exercise-section__sub">
+                  基础代谢 {daily.bmr} kcal ·{' '}
+                  {daily.calorieBalance > 0
+                    ? `已超出基代 ${daily.calorieBalance} kcal，需要运动消耗`
+                    : `还可再摄入 ${Math.abs(daily.calorieBalance)} kcal 不超基代`}
+                </Text>
+              )}
+              <ScrollView scrollX className="exercise-scroll">
+                {daily.exerciseEquivalents.map((ex) => (
+                  <ExerciseCard key={ex.key} exercise={ex} />
+                ))}
+              </ScrollView>
+            </View>
           )}
 
           {/* 食物记录列表 */}
@@ -287,10 +303,7 @@ const FoodCalorie = () => {
         <View className="recognize-modal">
           <View
             className="recognize-modal__mask"
-            onClick={() => {
-              setRecognized(null);
-              setOriginalRecognized(null);
-            }}
+            onClick={clearRecognition}
           />
           <View className="recognize-modal__content">
             <Text className="recognize-modal__title">识别结果</Text>
@@ -350,10 +363,7 @@ const FoodCalorie = () => {
             <View className="recognize-modal__actions">
               <View
                 className="recognize-modal__cancel"
-                onClick={() => {
-                  setRecognized(null);
-                  setOriginalRecognized(null);
-                }}
+                onClick={clearRecognition}
               >
                 <Text className="recognize-modal__cancel-text">取消</Text>
               </View>
@@ -365,25 +375,51 @@ const FoodCalorie = () => {
         </View>
       )}
 
+      {/* 识别中全屏动画 */}
+      {recognizing && (
+        <View className="scan-overlay">
+          <View className="scan-overlay__rings">
+            <View className="scan-overlay__ring scan-overlay__ring--1" />
+            <View className="scan-overlay__ring scan-overlay__ring--2" />
+            <View className="scan-overlay__ring scan-overlay__ring--3" />
+            <View className="scan-overlay__center">
+              <FireOutlined className="scan-overlay__icon" />
+            </View>
+          </View>
+          <Text className="scan-overlay__text">AI 正在分析食物...</Text>
+          <Text className="scan-overlay__sub">识别营养成分中，请稍候</Text>
+        </View>
+      )}
+
       {/* FAB 拍照按钮 */}
-      {!recognized && (
-        <View
-          className={`fab-camera ${recognizing ? 'fab-camera--loading' : ''}`}
-          onClick={recognizing ? undefined : handleTakePhoto}
-        >
-          {recognizing ? (
-            <ClockOutlined className="fab-camera__icon" />
-          ) : (
-            <PhotoOutlined className="fab-camera__icon" />
-          )}
-          <Text className="fab-camera__text">
-            {recognizing ? '识别中...' : '拍照记录'}
-          </Text>
+      {!recognized && !recognizing && (
+        <View className="fab-camera" onClick={handleTakePhoto}>
+          <PhotoOutlined className="fab-camera__icon" />
+          <Text className="fab-camera__text">拍照记录</Text>
         </View>
       )}
     </View>
   );
 };
+
+const EXERCISE_ICONS: Record<string, string> = {
+  running: '🏃',
+  walking: '🚶',
+  cycling: '🚴',
+  swimming: '🏊',
+  jumpRope: '🤸',
+};
+
+const ExerciseCard = ({ exercise }: { exercise: ExerciseEquivalent }) => (
+  <View className="exercise-card">
+    <Text className="exercise-card__emoji">{EXERCISE_ICONS[exercise.key] || '🏅'}</Text>
+    <Text className="exercise-card__label">{exercise.label}</Text>
+    <View className="exercise-card__value-row">
+      <Text className="exercise-card__value">{exercise.value}</Text>
+      <Text className="exercise-card__unit">{exercise.unit}</Text>
+    </View>
+  </View>
+);
 
 const CalorieSummaryCard = ({ daily }: { daily: DailySummary }) => (
   <Card className="calorie-card">

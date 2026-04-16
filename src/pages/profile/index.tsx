@@ -1,12 +1,22 @@
 import { View, Text, Image, Button, Input } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Arrow, UserOutlined } from '@taroify/icons';
+import { profileApi } from '../../apis/profile';
 import './index.scss';
 
 const Profile = () => {
   const [nickname, setNickname] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+
+  const version = useMemo(() => {
+    try {
+      const info = Taro.getAccountInfoSync();
+      return info.miniProgram.version || '开发版';
+    } catch {
+      return '开发版';
+    }
+  }, []);
   useDidShow(() => {
     setNickname(Taro.getStorageSync('nickname') || '');
     setAvatarUrl(Taro.getStorageSync('avatarUrl') || '');
@@ -20,11 +30,16 @@ const Profile = () => {
     }
   };
 
-  const handleNicknameConfirm = (e) => {
+  const handleNicknameConfirm = async (e) => {
     const val = e.detail.value?.trim();
-    if (val) {
+    if (val && val !== nickname) {
       setNickname(val);
       Taro.setStorageSync('nickname', val);
+      try {
+        await profileApi.update({ nickname: val });
+      } catch {
+        // 本地已保存，后端失败不阻塞
+      }
       Taro.showToast({ title: '昵称已更新', icon: 'success' });
     }
   };
@@ -71,7 +86,7 @@ const Profile = () => {
         </View>
       </View>
 
-      <Text className="version">Running Lab Stats v1.0.0</Text>
+      <Text className="version">Running Lab Stats v{version}</Text>
     </View>
   );
 };

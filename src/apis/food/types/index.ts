@@ -26,6 +26,13 @@ export interface RecognizeResult {
   totalCalorie: number;
 }
 
+export interface ExerciseEquivalent {
+  key: string;
+  label: string;
+  value: number;
+  unit: string;
+}
+
 export interface DailySummary {
   date: string;
   totalCalorie: number;
@@ -39,6 +46,7 @@ export interface DailySummary {
     snack: number;
   };
   runDistanceNeeded: number | null;
+  exerciseEquivalents: ExerciseEquivalent[] | null;
   bmr: number | null;
   calorieBalance: number | null;
   records: FoodRecord[];

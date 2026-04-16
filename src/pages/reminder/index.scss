@@ -42,6 +42,13 @@
     letter-spacing: -2px;
   }
 
+  &__interval {
+    font-size: $font-size-xl;
+    font-weight: 700;
+    color: $color-primary;
+    line-height: 1.2;
+  }
+
   &__days {
     font-size: $font-size-xs;
     color: $color-text-tertiary;
@@ -74,6 +81,39 @@
   &__text {
     font-size: $font-size-sm;
     color: $color-text-tertiary;
+  }
+}
+
+// ========== 模式切换 ==========
+
+.mode-tabs {
+  display: flex;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+  padding: 4px;
+  background: $color-bg-input;
+  border-radius: $radius-md;
+}
+
+.mode-tab {
+  flex: 1;
+  @include flex-center;
+  padding: $spacing-sm 0;
+  border-radius: $radius-sm;
+  transition: all 0.2s;
+
+  &--active {
+    background: $color-primary;
+  }
+
+  &__text {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+
+    .mode-tab--active & {
+      color: #fff;
+      font-weight: 600;
+    }
   }
 }
 
@@ -111,10 +151,28 @@
     color: $color-primary;
   }
 
+  &__tip {
+    display: block;
+    font-size: $font-size-xs;
+    color: $color-warning;
+    padding: $spacing-sm 0 0;
+  }
+
+  &__sub-tip {
+    display: block;
+    font-size: $font-size-xs;
+    color: $color-text-placeholder;
+    margin-top: $spacing-xs;
+  }
+
+  &__days-section {
+    padding: $spacing-md 0;
+  }
+
   &__days {
     display: flex;
     gap: $spacing-sm;
-    padding: $spacing-md 0;
+    padding: $spacing-md 0 0;
     flex-wrap: wrap;
   }
 

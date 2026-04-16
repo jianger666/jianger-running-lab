@@ -1,0 +1,59 @@
+@import '../../styles/variables.scss';
+
+.network-error {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 $spacing-xl;
+  background: $color-bg-page;
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: $color-bg-card;
+    font-size: $font-size-hero;
+    font-weight: 700;
+    color: $color-warning;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: $color-text-primary;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__desc {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__btn {
+    padding: $spacing-sm $spacing-xl;
+    background: $color-primary;
+    border-radius: $radius-md;
+
+    &--loading {
+      opacity: 0.7;
+    }
+  }
+
+  &__btn-text {
+    font-size: $font-size-base;
+    color: #fff;
+    font-weight: 600;
+  }
+}

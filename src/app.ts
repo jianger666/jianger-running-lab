@@ -1,36 +1,39 @@
 import Taro from '@tarojs/taro';
-import { PropsWithChildren, useEffect } from 'react';
+import { createElement, Fragment, PropsWithChildren, useEffect, useState, useCallback } from 'react';
 import { userApi } from './apis/user';
-import { watchApi } from './apis/watch';
 import { STORAGE_KEYS } from './constants/storage';
+import NetworkError from './components/network-error';
 import './app.scss';
 
 const App = ({ children }: PropsWithChildren) => {
-  useEffect(() => {
-    const init = async () => {
-      try {
-        const { code } = await Taro.login();
-        const user = await userApi.login({ code });
+  const [loginFailed, setLoginFailed] = useState(false);
 
-        Taro.setStorageSync(STORAGE_KEYS.TOKEN, user.token);
-        Taro.setStorageSync(STORAGE_KEYS.USER_ID, user.userId);
-        Taro.setStorageSync(STORAGE_KEYS.HAS_WATCH, user.hasWatch);
-        Taro.setStorageSync(STORAGE_KEYS.BOUND_BRANDS, user.boundBrands);
-        if (user.lastSyncAt) {
-          Taro.setStorageSync(STORAGE_KEYS.LAST_SYNC_AT, user.lastSyncAt);
-        }
+  const doLogin = useCallback(async () => {
+    try {
+      const { code } = await Taro.login();
+      const user = await userApi.login({ code });
 
-        if (user.hasWatch) {
-          watchApi.sync().catch(() => {});
-        }
-      } catch (err) {
-        console.error('登录失败:', err);
-      }
-    };
-    init();
+      Taro.setStorageSync(STORAGE_KEYS.TOKEN, user.token);
+      Taro.setStorageSync(STORAGE_KEYS.USER_ID, user.userId);
+      if (user.nickname) Taro.setStorageSync('nickname', user.nickname);
+
+      setLoginFailed(false);
+    } catch (err) {
+      console.error('登录失败:', err);
+      setLoginFailed(true);
+    }
   }, []);
 
-  return children;
+  useEffect(() => {
+    doLogin();
+  }, [doLogin]);
+
+  return createElement(
+    Fragment,
+    null,
+    children,
+    loginFailed ? createElement(NetworkError, { onRetry: doLogin }) : null,
+  );
 };
 
 export default App;

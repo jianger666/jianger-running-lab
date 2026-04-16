@@ -128,15 +128,15 @@
   }
 }
 
-// 跑步消耗提示
-.run-hint {
+// 身体信息引导
+.body-info-hint {
   display: flex;
   align-items: center;
-  gap: $spacing-md;
+  gap: $spacing-sm;
   margin-bottom: $spacing-sm;
 
   &__icon {
-    font-size: $font-size-xl;
+    font-size: 40px;
     color: $color-primary;
     flex-shrink: 0;
   }
@@ -145,22 +145,81 @@
     flex: 1;
   }
 
-  &__text {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
+  &__title {
+    display: block;
+    font-size: $font-size-base;
+    color: $color-text-primary;
+    font-weight: 600;
+    margin-bottom: 4px;
   }
 
-  &__distance {
-    font-size: $font-size-lg;
-    font-weight: 700;
-    color: $color-primary;
+  &__desc {
+    display: block;
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+}
+
+// 运动消耗对比
+.exercise-section {
+  margin-bottom: $spacing-sm;
+
+  &__title {
+    display: block;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    font-weight: 600;
+    margin-bottom: 4px;
   }
 
   &__sub {
     display: block;
     font-size: $font-size-xs;
     color: $color-text-tertiary;
-    margin-top: 4px;
+    margin-bottom: $spacing-sm;
+  }
+}
+
+.exercise-scroll {
+  white-space: nowrap;
+}
+
+.exercise-card {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: 160px;
+  padding: $spacing-sm;
+  margin-right: $spacing-sm;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+
+  &__emoji {
+    font-size: 48px;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__label {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-bottom: 4px;
+  }
+
+  &__value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  &__value {
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-primary;
+  }
+
+  &__unit {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
   }
 }
 
@@ -453,29 +512,127 @@
 // FAB 拍照按钮
 .fab-camera {
   position: fixed;
-  bottom: 60px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
   @include flex-center;
-  padding: $spacing-sm $spacing-xl;
+  padding: $spacing-md $spacing-xxl;
   background: $color-primary;
   border-radius: $radius-round;
-  box-shadow: 0 8px 24px rgba($color-primary, 0.4);
+  box-shadow: 0 12px 32px rgba($color-primary, 0.5);
   z-index: 100;
 
-  &--loading {
-    opacity: 0.7;
-  }
-
   &__icon {
-    font-size: $font-size-lg;
+    font-size: $font-size-xl;
     color: #fff;
-    margin-right: $spacing-xs;
+    margin-right: $spacing-sm;
   }
 
   &__text {
-    font-size: $font-size-base;
+    font-size: $font-size-md;
     color: #fff;
-    font-weight: 600;
+    font-weight: 700;
+  }
+}
+
+// 识别中全屏扫描动画
+.scan-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+
+  &__rings {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    border: 2px solid rgba($color-primary, 0.3);
+    transform: translate(-50%, -50%);
+    animation: scan-pulse 2s ease-out infinite;
+
+    &--1 {
+      width: 120px;
+      height: 120px;
+      animation-delay: 0s;
+    }
+    &--2 {
+      width: 180px;
+      height: 180px;
+      animation-delay: 0.4s;
+    }
+    &--3 {
+      width: 240px;
+      height: 240px;
+      animation-delay: 0.8s;
+    }
+  }
+
+  &__center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba($color-primary, 0.15);
+    @include flex-center;
+    animation: scan-glow 1.5s ease-in-out infinite alternate;
+  }
+
+  &__icon {
+    font-size: 48px;
+    color: $color-primary;
+  }
+
+  &__text {
+    font-size: $font-size-lg;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  &__sub {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+    margin-top: $spacing-xs;
+  }
+}
+
+@keyframes scan-pulse {
+  0% {
+    opacity: 1;
+    border-color: rgba($color-primary, 0.6);
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    border-color: rgba($color-primary, 0);
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+@keyframes scan-glow {
+  0% {
+    background: rgba($color-primary, 0.1);
+    box-shadow: 0 0 20px rgba($color-primary, 0.2);
+  }
+  100% {
+    background: rgba($color-primary, 0.25);
+    box-shadow: 0 0 40px rgba($color-primary, 0.4);
   }
 }

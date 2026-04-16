@@ -1,7 +1,11 @@
 export interface Reminder {
   id: number;
   content: string;
+  mode: 'fixed' | 'interval';
   time: string;
+  intervalMinutes: number | null;
+  startTime: string | null;
+  endTime: string | null;
   enabled: boolean;
   repeat: boolean;
   repeatDays: number[];
@@ -11,16 +15,16 @@ export interface Reminder {
 
 export interface CreateReminderParams {
   content: string;
-  time: string;
+  mode?: 'fixed' | 'interval';
+  time?: string;
+  intervalMinutes?: number;
+  startTime?: string;
+  endTime?: string;
   repeat?: boolean;
   repeatDays?: number[];
 }
 
 export interface UpdateReminderParams {
   id: number;
-  content?: string;
-  time?: string;
-  repeat?: boolean;
-  repeatDays?: number[];
   enabled?: boolean;
 }

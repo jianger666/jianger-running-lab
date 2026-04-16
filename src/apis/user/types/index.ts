@@ -4,7 +4,4 @@ export interface LoginResult {
   openid: string;
   nickname: string | null;
   avatarUrl: string | null;
-  boundBrands: string[];
-  hasWatch: boolean;
-  lastSyncAt: string | null;
 }

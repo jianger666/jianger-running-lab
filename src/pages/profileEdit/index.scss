@@ -51,6 +51,67 @@
   }
 }
 
+.bmi-card {
+  margin-bottom: $spacing-md;
+
+  &__row {
+    @include flex-center;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-md;
+  }
+
+  &__label {
+    font-size: $font-size-base;
+    color: $color-text-secondary;
+  }
+
+  &__value {
+    font-size: $font-size-xl;
+    font-weight: 700;
+  }
+
+  &__tag {
+    font-size: $font-size-xs;
+    padding: 2px 12px;
+    border: 1px solid;
+    border-radius: $radius-round;
+  }
+
+  &__scale {
+    position: relative;
+    display: flex;
+    height: 12px;
+    border-radius: $radius-round;
+    overflow: hidden;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__segment {
+    flex: 1;
+  }
+
+  &__indicator {
+    position: absolute;
+    top: -4px;
+    width: 8px;
+    height: 20px;
+    background: #fff;
+    border-radius: 4px;
+    transform: translateX(-50%);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  &__labels {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  &__scale-label {
+    font-size: $font-size-xs;
+    color: $color-text-placeholder;
+  }
+}
+
 .form-tips {
   margin-bottom: $spacing-lg;
   padding: 0 $spacing-xs;

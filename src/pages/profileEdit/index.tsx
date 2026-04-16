@@ -1,6 +1,6 @@
 import { View, Text, Input, Picker } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { profileApi } from '../../apis/profile';
 import { Card, Skeleton } from '../../components';
 import './index.scss';
@@ -9,6 +9,16 @@ const GENDER_OPTIONS = ['男', '女'];
 const GENDER_MAP: Record<string, string> = { 男: 'male', 女: 'female' };
 const GENDER_REVERSE: Record<string, string> = { male: '男', female: '女' };
 
+const BMI_LEVELS = [
+  { max: 18.5, label: '偏瘦', color: '#4ecdc4' },
+  { max: 24, label: '正常', color: '#27ae60' },
+  { max: 28, label: '偏胖', color: '#f39c12' },
+  { max: Infinity, label: '肥胖', color: '#ef4444' },
+] as const;
+
+const getBmiInfo = ({ bmi }: { bmi: number }) =>
+  BMI_LEVELS.find((l) => bmi < l.max) ?? BMI_LEVELS[BMI_LEVELS.length - 1];
+
 const ProfileEdit = () => {
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
@@ -16,6 +26,15 @@ const ProfileEdit = () => {
   const [birthday, setBirthday] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const bmiData = useMemo(() => {
+    const h = Number(height);
+    const w = Number(weight);
+    if (!h || !w || h < 50 || h > 250 || w < 20 || w > 300) return null;
+    const value = Math.round((w / (h / 100) ** 2) * 10) / 10;
+    const info = getBmiInfo({ bmi: value });
+    return { value, ...info };
+  }, [height, weight]);
 
   useDidShow(() => {
     fetchProfile();
@@ -139,6 +158,47 @@ const ProfileEdit = () => {
           </Picker>
         </View>
       </Card>
+
+      {bmiData && (
+        <Card className="bmi-card">
+          <View className="bmi-card__row">
+            <Text className="bmi-card__label">你的 BMI</Text>
+            <Text
+              className="bmi-card__value"
+              style={{ color: bmiData.color }}
+            >
+              {bmiData.value}
+            </Text>
+            <Text
+              className="bmi-card__tag"
+              style={{ color: bmiData.color, borderColor: bmiData.color }}
+            >
+              {bmiData.label}
+            </Text>
+          </View>
+          <View className="bmi-card__scale">
+            {BMI_LEVELS.map((level, i) => (
+              <View
+                key={i}
+                className="bmi-card__segment"
+                style={{ background: level.color }}
+              />
+            ))}
+            <View
+              className="bmi-card__indicator"
+              style={{
+                left: `${Math.min(Math.max(((bmiData.value - 14) / (34 - 14)) * 100, 2), 98)}%`,
+              }}
+            />
+          </View>
+          <View className="bmi-card__labels">
+            <Text className="bmi-card__scale-label">偏瘦</Text>
+            <Text className="bmi-card__scale-label">正常</Text>
+            <Text className="bmi-card__scale-label">偏胖</Text>
+            <Text className="bmi-card__scale-label">肥胖</Text>
+          </View>
+        </Card>
+      )}
 
       <View className="form-tips">
         <Text className="form-tips__text">
