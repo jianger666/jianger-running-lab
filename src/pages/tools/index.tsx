@@ -1,5 +1,5 @@
 import { View, Text } from '@tarojs/components';
-import { ClockOutlined, NotesOutlined, PhotoOutlined } from '@taroify/icons';
+import { ClockOutlined, PhotoOutlined } from '@taroify/icons';
 import Taro from '@tarojs/taro';
 import type { ReactNode } from 'react';
 import './index.scss';
@@ -26,13 +26,6 @@ const TOOLS: ToolItem[] = [
     desc: '配速 → 完赛成绩',
     path: '/pages/paceTable/index',
     icon: <ClockOutlined size={24} color="#f3799e" />,
-  },
-  {
-    key: 'reminder',
-    title: '定时提醒',
-    desc: '到点微信提醒',
-    path: '/pages/reminder/index',
-    icon: <NotesOutlined size={24} color="#f3799e" />,
   },
 ];
 
