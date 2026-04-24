@@ -1,4 +1,5 @@
-import { View, Text, Canvas, ITouchEvent } from '@tarojs/components';
+import { View, Text, Canvas } from '@tarojs/components';
+import type { ITouchEvent } from '@tarojs/components';
 import Taro, { useReady } from '@tarojs/taro';
 import { useRef, useState, useCallback } from 'react';
 import {
@@ -183,26 +184,43 @@ const PainCheck = () => {
     return null;
   };
 
-  const handleCanvasTap = (e: ITouchEvent) => {
+  const handleCanvasTouch = (e: ITouchEvent) => {
     const info = canvasRef.current;
     if (!info) return;
-    const { ctx, dpr, cssWidth } = info;
-    const detail = e.detail as unknown as { x: number; y: number };
-    const x = detail.x * dpr;
-    const y = detail.y * dpr;
-    const viewport = getViewport({ side, internalWidth: cssWidth * dpr });
-    const hit = hitTestMuscle({ x, y, ctx, currentSide: side, viewport });
-    if (!hit) {
-      drawAll({ selected: selectedIds, currentSide: side });
-      return;
-    }
-    setSelectedIds((prev) => {
-      const next = prev.includes(hit.id)
-        ? prev.filter((id) => id !== hit.id)
-        : [...prev, hit.id];
-      drawAll({ selected: next, currentSide: side });
-      return next;
-    });
+    const touch = e.changedTouches?.[0] ?? e.touches?.[0];
+    if (!touch) return;
+    const { clientX, clientY } = touch as unknown as {
+      clientX: number;
+      clientY: number;
+    };
+
+    Taro.createSelectorQuery()
+      .select('#bodyCanvas')
+      .boundingClientRect()
+      .exec((res) => {
+        const rect = res?.[0] as { left: number; top: number } | undefined;
+        if (!rect) return;
+        const current = canvasRef.current;
+        if (!current) return;
+        const { ctx, dpr, cssWidth } = current;
+        const cssX = clientX - rect.left;
+        const cssY = clientY - rect.top;
+        const x = cssX * dpr;
+        const y = cssY * dpr;
+        const viewport = getViewport({
+          side,
+          internalWidth: cssWidth * dpr,
+        });
+        const hit = hitTestMuscle({ x, y, ctx, currentSide: side, viewport });
+        if (!hit) return;
+        setSelectedIds((prev) => {
+          const next = prev.includes(hit.id)
+            ? prev.filter((id) => id !== hit.id)
+            : [...prev, hit.id];
+          drawAll({ selected: next, currentSide: side });
+          return next;
+        });
+      });
   };
 
   const handleSwitchSide = ({ next }: { next: BodySide }) => {
@@ -252,7 +270,7 @@ const PainCheck = () => {
           id="bodyCanvas"
           type="2d"
           className="pain-canvas"
-          onClick={handleCanvasTap}
+          onTouchEnd={handleCanvasTouch}
         />
       </View>
 
