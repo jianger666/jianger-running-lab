@@ -1,277 +1,64 @@
-import { View, Text, Canvas } from '@tarojs/components';
-import type { ITouchEvent } from '@tarojs/components';
-import Taro, { useReady } from '@tarojs/taro';
-import { useRef, useState, useCallback } from 'react';
-import {
-  MUSCLES,
-  OUTLINES,
-  MUSCLE_META,
-  SIDE_VIEWPORT,
-  BodySide,
-  MuscleWithSubpaths,
-} from './data/muscles';
-import { buildSvgPath } from './utils/svgPath';
+import { View, Text } from '@tarojs/components';
+import Taro, { useDidShow } from '@tarojs/taro';
+import { useState } from 'react';
+import { BODY_PART_MAP } from './data/body-parts';
 import './index.scss';
 
-interface CanvasRef {
-  ctx: CanvasRenderingContext2D;
-  dpr: number;
-  cssWidth: number;
-  cssHeight: number;
-}
-
-const ASPECT_RATIO = 960 / 512;
-
-const getViewport = ({
-  side,
-  internalWidth,
-}: {
-  side: BodySide;
-  internalWidth: number;
-}) => {
-  const vp = SIDE_VIEWPORT[side];
-  return {
-    scale: internalWidth / vp.width,
-    offsetX: vp.offsetX,
-    offsetY: vp.offsetY,
-  };
-};
+const STORAGE_KEY = 'painCheck.lastSelected';
 
 const PainCheck = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [side, setSide] = useState<BodySide>('front');
-  const canvasRef = useRef<CanvasRef | null>(null);
 
-  const drawAll = useCallback(
-    ({
-      selected,
-      currentSide,
-    }: {
-      selected: string[];
-      currentSide: BodySide;
-    }) => {
-      const info = canvasRef.current;
-      if (!info) return;
-      const { ctx, dpr, cssWidth, cssHeight } = info;
-      const internalWidth = cssWidth * dpr;
-      const internalHeight = cssHeight * dpr;
-      const viewport = getViewport({ side: currentSide, internalWidth });
-
-      ctx.clearRect(0, 0, internalWidth, internalHeight);
-
-      const outline = OUTLINES.find((o) =>
-        currentSide === 'front'
-          ? o.id === 'outline-front'
-          : o.id === 'outline-back',
-      );
-      if (outline) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-        ctx.beginPath();
-        buildSvgPath({
-          ctx,
-          d: outline.d,
-          transform: outline.transform,
-          viewport,
-        });
-        ctx.fill();
-
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        buildSvgPath({
-          ctx,
-          d: outline.d,
-          transform: outline.transform,
-          viewport,
-        });
-        ctx.stroke();
-      }
-
-      MUSCLES.forEach((m) => {
-        const visibleSubpaths = m.subpaths.filter(
-          (sp) => sp.side === currentSide,
-        );
-        if (visibleSubpaths.length === 0) return;
-        const isSelected = selected.includes(m.id);
-        ctx.fillStyle = isSelected
-          ? 'rgba(243, 121, 158, 0.9)'
-          : 'rgba(243, 121, 158, 0.28)';
-        visibleSubpaths.forEach((sp) => {
-          ctx.beginPath();
-          buildSvgPath({
-            ctx,
-            d: sp.d,
-            transform: m.transform,
-            viewport,
-          });
-          ctx.fill();
-        });
-      });
-
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
-      ctx.lineWidth = 1;
-      MUSCLES.forEach((m) => {
-        const visibleSubpaths = m.subpaths.filter(
-          (sp) => sp.side === currentSide,
-        );
-        visibleSubpaths.forEach((sp) => {
-          ctx.beginPath();
-          buildSvgPath({
-            ctx,
-            d: sp.d,
-            transform: m.transform,
-            viewport,
-          });
-          ctx.stroke();
-        });
-      });
-    },
-    [],
-  );
-
-  const setupCanvas = useCallback(() => {
-    return new Promise<void>((resolve) => {
-      const query = Taro.createSelectorQuery();
-      query
-        .select('#bodyCanvas')
-        .fields({ node: true, size: true })
-        .exec((res) => {
-          if (!res || !res[0] || !res[0].node) {
-            resolve();
-            return;
-          }
-          const canvas = res[0].node;
-          const cssWidth = res[0].width;
-          const cssHeight = res[0].height || cssWidth * ASPECT_RATIO;
-          const dpr = Taro.getSystemInfoSync().pixelRatio;
-          canvas.width = Math.round(cssWidth * dpr);
-          canvas.height = Math.round(cssHeight * dpr);
-          const ctx = canvas.getContext('2d');
-          canvasRef.current = { ctx, dpr, cssWidth, cssHeight };
-          resolve();
-        });
-    });
-  }, []);
-
-  useReady(() => {
-    setupCanvas().then(() => drawAll({ selected: [], currentSide: 'front' }));
+  useDidShow(() => {
+    const stored = Taro.getStorageSync(STORAGE_KEY);
+    if (Array.isArray(stored)) {
+      setSelectedIds(stored as string[]);
+    }
   });
 
-  const hitTestMuscle = ({
-    x,
-    y,
-    ctx,
-    currentSide,
-    viewport,
-  }: {
-    x: number;
-    y: number;
-    ctx: CanvasRenderingContext2D;
-    currentSide: BodySide;
-    viewport: ReturnType<typeof getViewport>;
-  }): MuscleWithSubpaths | null => {
-    for (let i = MUSCLES.length - 1; i >= 0; i -= 1) {
-      const m = MUSCLES[i];
-      const subs = m.subpaths.filter((sp) => sp.side === currentSide);
-      for (const sp of subs) {
-        ctx.beginPath();
-        buildSvgPath({ ctx, d: sp.d, transform: m.transform, viewport });
-        if (ctx.isPointInPath(x, y)) {
-          return m;
-        }
-      }
-    }
-    return null;
+  const handleOpenSelector = () => {
+    Taro.navigateTo({ url: '/pages/painCheck/selector/index' });
   };
 
-  const handleCanvasTouch = (e: ITouchEvent) => {
-    const info = canvasRef.current;
-    if (!info) return;
-    const touch = e.changedTouches?.[0] ?? e.touches?.[0];
-    if (!touch) return;
-    const { clientX, clientY } = touch as unknown as {
-      clientX: number;
-      clientY: number;
-    };
-
-    Taro.createSelectorQuery()
-      .select('#bodyCanvas')
-      .boundingClientRect()
-      .exec((res) => {
-        const rect = res?.[0] as { left: number; top: number } | undefined;
-        if (!rect) return;
-        const current = canvasRef.current;
-        if (!current) return;
-        const { ctx, dpr, cssWidth } = current;
-        const cssX = clientX - rect.left;
-        const cssY = clientY - rect.top;
-        const x = cssX * dpr;
-        const y = cssY * dpr;
-        const viewport = getViewport({
-          side,
-          internalWidth: cssWidth * dpr,
-        });
-        const hit = hitTestMuscle({ x, y, ctx, currentSide: side, viewport });
-        if (!hit) return;
-        setSelectedIds((prev) => {
-          const next = prev.includes(hit.id)
-            ? prev.filter((id) => id !== hit.id)
-            : [...prev, hit.id];
-          drawAll({ selected: next, currentSide: side });
-          return next;
-        });
-      });
+  const handleRemove = ({ id }: { id: string }) => {
+    const next = selectedIds.filter((i) => i !== id);
+    setSelectedIds(next);
+    Taro.setStorageSync(STORAGE_KEY, next);
   };
 
-  const handleSwitchSide = ({ next }: { next: BodySide }) => {
-    setSide(next);
-    drawAll({ selected: selectedIds, currentSide: next });
-  };
-
-  const handleRemoveChip = ({ id }: { id: string }) => {
-    setSelectedIds((prev) => {
-      const next = prev.filter((i) => i !== id);
-      drawAll({ selected: next, currentSide: side });
-      return next;
-    });
-  };
-
-  const handleClearAll = () => {
+  const handleClear = () => {
     setSelectedIds([]);
-    drawAll({ selected: [], currentSide: side });
+    Taro.setStorageSync(STORAGE_KEY, []);
+  };
+
+  const handleAnalyze = () => {
+    if (selectedIds.length === 0) {
+      Taro.showToast({ title: '请先选择疼痛部位', icon: 'none' });
+      return;
+    }
+    Taro.showToast({ title: 'AI 分析开发中', icon: 'none' });
   };
 
   return (
     <View className="page-pain">
       <View className="pain-header">
-        <Text className="pain-header__title">点击不舒服的部位</Text>
+        <Text className="pain-header__title">跑步伤痛自查</Text>
         <Text className="pain-header__desc">
-          支持多选，轻点人体图中疼痛/紧张的肌肉
+          选择疼痛部位，AI 帮你分析可能的跑步损伤
         </Text>
       </View>
 
-      <View className="pain-tabs">
-        <View
-          className={`pain-tab ${side === 'front' ? 'pain-tab--active' : ''}`}
-          onClick={() => handleSwitchSide({ next: 'front' })}
-        >
-          <Text>正面</Text>
+      <View className="pain-selector-entry" onClick={handleOpenSelector}>
+        <View className="pain-selector-entry__icon">3D</View>
+        <View className="pain-selector-entry__body">
+          <Text className="pain-selector-entry__title">
+            {selectedIds.length > 0 ? '重新选择疼痛部位' : '选择疼痛部位'}
+          </Text>
+          <Text className="pain-selector-entry__desc">
+            可旋转、缩放、点选人体 3D 模型
+          </Text>
         </View>
-        <View
-          className={`pain-tab ${side === 'back' ? 'pain-tab--active' : ''}`}
-          onClick={() => handleSwitchSide({ next: 'back' })}
-        >
-          <Text>背面</Text>
-        </View>
-      </View>
-
-      <View className="pain-canvas-wrap">
-        <Canvas
-          id="bodyCanvas"
-          type="2d"
-          className="pain-canvas"
-          onTouchEnd={handleCanvasTouch}
-        />
+        <Text className="pain-selector-entry__arrow">›</Text>
       </View>
 
       <View className="pain-selected">
@@ -280,14 +67,14 @@ const PainCheck = () => {
             已选 {selectedIds.length} 处
           </Text>
           {selectedIds.length > 0 && (
-            <Text className="pain-selected__clear" onClick={handleClearAll}>
+            <Text className="pain-selected__clear" onClick={handleClear}>
               清空
             </Text>
           )}
         </View>
         {selectedIds.length === 0 && (
           <Text className="pain-selected__empty">
-            还没有选择，点击人体图开始
+            还没有选择，点击上方进入 3D 选择器
           </Text>
         )}
         {selectedIds.length > 0 && (
@@ -296,10 +83,10 @@ const PainCheck = () => {
               <View
                 key={id}
                 className="pain-chip"
-                onClick={() => handleRemoveChip({ id })}
+                onClick={() => handleRemove({ id })}
               >
                 <Text className="pain-chip__text">
-                  {MUSCLE_META[id]?.name ?? id}
+                  {BODY_PART_MAP[id]?.name ?? id}
                 </Text>
                 <Text className="pain-chip__close">×</Text>
               </View>
@@ -308,9 +95,23 @@ const PainCheck = () => {
         )}
       </View>
 
+      <View className="pain-submit">
+        <View
+          className={`pain-submit__btn ${
+            selectedIds.length === 0 ? 'pain-submit__btn--disabled' : ''
+          }`}
+          onClick={handleAnalyze}
+        >
+          <Text className="pain-submit__text">开始 AI 分析</Text>
+        </View>
+        <Text className="pain-submit__tips">
+          *AI 分析结果仅供参考，不能替代医学诊断
+        </Text>
+      </View>
+
       <View className="pain-footer">
         <Text className="pain-footer__text">
-          人体图素材来源：vue-human-muscle-anatomy (MIT)
+          3D 人体模型：Three.js + 自建几何（内测版）
         </Text>
       </View>
     </View>

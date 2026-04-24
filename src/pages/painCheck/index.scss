@@ -2,87 +2,91 @@
 
 .page-pain {
   min-height: 100vh;
-  padding: $spacing-md $spacing-lg $spacing-xxl;
-  color: $color-text-primary;
+  background: $color-bg-page;
+  padding: $spacing-md;
 }
 
 .pain-header {
-  margin-bottom: $spacing-md;
+  margin-bottom: $spacing-lg;
 
   &__title {
     display: block;
-    font-size: $font-size-lg;
-    font-weight: 700;
+    font-size: $font-size-xl;
     color: $color-text-primary;
+    font-weight: 600;
   }
 
   &__desc {
     display: block;
     margin-top: $spacing-xs;
     font-size: $font-size-sm;
-    color: $color-text-tertiary;
+    color: $color-text-secondary;
   }
 }
 
-.pain-tabs {
+.pain-selector-entry {
   display: flex;
-  gap: $spacing-xs;
-  margin-bottom: $spacing-sm;
-}
-
-.pain-tab {
-  flex: 1;
-  padding: 12px 0;
-  text-align: center;
-  background: $color-bg-card;
-  color: $color-text-secondary;
-  border-radius: $radius-sm;
-  font-size: $font-size-base;
-
-  &--active {
-    background: rgba(243, 121, 158, 0.2);
-    color: $color-primary;
-    font-weight: 600;
-    border: 1px solid rgba(243, 121, 158, 0.5);
-  }
-}
-
-.pain-canvas-wrap {
-  position: relative;
-  width: 100%;
-  padding-bottom: 187.5%;
-  background: #1f1f1f;
-  border-radius: $radius-md;
-  overflow: hidden;
-}
-
-.pain-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.pain-selected {
-  margin-top: $spacing-md;
+  align-items: center;
+  gap: $spacing-sm;
   padding: $spacing-md;
   background: $color-bg-card;
   border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-sm;
+    background: linear-gradient(135deg, #f3799e, #ffb4c6);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    font-size: $font-size-base;
+    color: $color-text-primary;
+    font-weight: 600;
+  }
+
+  &__desc {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+
+  &__arrow {
+    font-size: 24px;
+    color: $color-text-secondary;
+  }
+}
+
+.pain-selected {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
 
   &__row {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-xs;
   }
 
   &__label {
     font-size: $font-size-base;
-    font-weight: 600;
     color: $color-text-primary;
+    font-weight: 500;
   }
 
   &__clear {
@@ -92,9 +96,9 @@
 
   &__empty {
     display: block;
-    margin-top: $spacing-sm;
+    margin-top: $spacing-xs;
     font-size: $font-size-sm;
-    color: $color-text-tertiary;
+    color: $color-text-secondary;
   }
 }
 
@@ -102,28 +106,54 @@
   display: flex;
   flex-wrap: wrap;
   gap: $spacing-xs;
-  margin-top: $spacing-sm;
+  margin-top: $spacing-xs;
 }
 
 .pain-chip {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: rgba(243, 121, 158, 0.15);
-  border: 1px solid rgba(243, 121, 158, 0.4);
-  color: $color-primary;
-  border-radius: $radius-round;
+  gap: 4px;
+  padding: 6px 12px;
+  background: rgba(243, 121, 158, 0.12);
+  border-radius: 999px;
 
   &__text {
     font-size: $font-size-sm;
+    color: $color-primary;
   }
 
   &__close {
-    font-size: $font-size-md;
-    line-height: 1;
-    color: $color-primary;
-    margin-left: 2px;
+    font-size: $font-size-base;
+    color: $color-text-secondary;
+  }
+}
+
+.pain-submit {
+  margin-top: $spacing-lg;
+
+  &__btn {
+    padding: 14px 0;
+    background: $color-primary;
+    border-radius: $radius-md;
+    text-align: center;
+
+    &--disabled {
+      background: rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  &__text {
+    color: #fff;
+    font-size: $font-size-base;
+    font-weight: 600;
+  }
+
+  &__tips {
+    display: block;
+    margin-top: $spacing-xs;
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    text-align: center;
   }
 }
 
@@ -134,6 +164,6 @@
     display: block;
     text-align: center;
     font-size: $font-size-xs;
-    color: $color-text-placeholder;
+    color: $color-text-secondary;
   }
 }
