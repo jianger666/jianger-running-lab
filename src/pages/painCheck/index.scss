@@ -3,11 +3,14 @@
 .page-pain {
   min-height: 100vh;
   background: $color-bg-page;
-  padding: $spacing-md;
+  padding: $spacing-sm $spacing-md $spacing-xl;
 }
 
 .pain-header {
-  margin-bottom: $spacing-lg;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-sm;
 
   &__title {
     display: block;
@@ -18,113 +21,141 @@
 
   &__desc {
     display: block;
-    margin-top: $spacing-xs;
+    margin-top: 4px;
     font-size: $font-size-sm;
-    color: $color-text-secondary;
-  }
-}
-
-.pain-selector-entry {
-  display: flex;
-  align-items: center;
-  gap: $spacing-sm;
-  padding: $spacing-md;
-  background: $color-bg-card;
-  border-radius: $radius-md;
-  margin-bottom: $spacing-md;
-
-  &__icon {
-    width: 48px;
-    height: 48px;
-    border-radius: $radius-sm;
-    background: linear-gradient(135deg, #f3799e, #ffb4c6);
-    color: #fff;
-    font-size: 18px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  &__body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  &__title {
-    font-size: $font-size-base;
-    color: $color-text-primary;
-    font-weight: 600;
-  }
-
-  &__desc {
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-  }
-
-  &__arrow {
-    font-size: 24px;
-    color: $color-text-secondary;
-  }
-}
-
-.pain-selected {
-  background: $color-bg-card;
-  border-radius: $radius-md;
-  padding: $spacing-md;
-  margin-bottom: $spacing-md;
-
-  &__row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: $spacing-xs;
-  }
-
-  &__label {
-    font-size: $font-size-base;
-    color: $color-text-primary;
-    font-weight: 500;
+    color: $color-text-tertiary;
   }
 
   &__clear {
     font-size: $font-size-sm;
     color: $color-primary;
   }
+}
+
+.pain-tabs {
+  display: flex;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-sm;
+}
+
+.pain-tab {
+  flex: 1;
+  padding: 16px 0;
+  text-align: center;
+  background: $color-bg-card;
+  color: $color-text-secondary;
+  border-radius: $radius-sm;
+  font-size: $font-size-base;
+  transition: all 0.15s;
+
+  &--active {
+    background: rgba(243, 121, 158, 0.18);
+    color: $color-primary;
+    font-weight: 600;
+    border: 2rpx solid rgba(243, 121, 158, 0.55);
+  }
+}
+
+.pain-canvas-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 187.5%;
+  background: radial-gradient(
+    ellipse at 50% 35%,
+    #2c2c33 0%,
+    #1a1a1f 65%,
+    #141418 100%
+  );
+  border-radius: $radius-md;
+  overflow: hidden;
+  margin-bottom: $spacing-sm;
+}
+
+.pain-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.pain-canvas-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.38);
+  pointer-events: none;
+}
+
+.pain-list {
+  margin-bottom: $spacing-md;
+
+  &__title {
+    display: block;
+    font-size: $font-size-base;
+    color: $color-text-primary;
+    font-weight: 500;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__sub {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+    font-weight: 400;
+  }
 
   &__empty {
-    display: block;
-    margin-top: $spacing-xs;
+    padding: $spacing-md;
+    text-align: center;
+    background: $color-bg-card;
+    border-radius: $radius-sm;
+    color: $color-text-tertiary;
     font-size: $font-size-sm;
-    color: $color-text-secondary;
-  }
-}
-
-.pain-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $spacing-xs;
-  margin-top: $spacing-xs;
-}
-
-.pain-chip {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  background: rgba(243, 121, 158, 0.12);
-  border-radius: 999px;
-
-  &__text {
-    font-size: $font-size-sm;
-    color: $color-primary;
   }
 
-  &__close {
+  &__card {
+    display: flex;
+    align-items: center;
+    padding: $spacing-sm;
+    background: $color-bg-card;
+    border-radius: $radius-sm;
+    margin-bottom: $spacing-xs;
+    border-left: 6rpx solid $color-primary;
+  }
+
+  &__main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__muscle {
     font-size: $font-size-base;
+    color: $color-text-primary;
+    font-weight: 600;
+  }
+
+  &__meta {
+    font-size: $font-size-sm;
     color: $color-text-secondary;
+  }
+
+  &__trigger {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  &__arrow {
+    font-size: 36px;
+    color: $color-text-tertiary;
+    line-height: 1;
   }
 }
 
@@ -132,19 +163,21 @@
   margin-top: $spacing-lg;
 
   &__btn {
-    padding: 14px 0;
-    background: $color-primary;
+    padding: 16px 0;
+    background: linear-gradient(135deg, #f3799e, #e05a84);
     border-radius: $radius-md;
     text-align: center;
+    box-shadow: 0 6px 16px rgba(243, 121, 158, 0.25);
 
     &--disabled {
-      background: rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: none;
     }
   }
 
   &__text {
     color: #fff;
-    font-size: $font-size-base;
+    font-size: $font-size-md;
     font-weight: 600;
   }
 
@@ -152,18 +185,148 @@
     display: block;
     margin-top: $spacing-xs;
     font-size: $font-size-xs;
-    color: $color-text-secondary;
+    color: $color-text-tertiary;
     text-align: center;
   }
 }
 
-.pain-footer {
-  margin-top: $spacing-lg;
+.sheet-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+}
+
+.sheet-body {
+  width: 100%;
+  max-height: 80vh;
+  background: $color-bg-card;
+  border-radius: $radius-md $radius-md 0 0;
+  padding: $spacing-md $spacing-md
+    calc($spacing-md + env(safe-area-inset-bottom));
+  overflow-y: auto;
+}
+
+.sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.sheet-title {
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+  font-weight: 600;
+}
+
+.sheet-close {
+  font-size: 48px;
+  color: $color-text-tertiary;
+  line-height: 1;
+  padding: 0 $spacing-xs;
+}
+
+.sheet-section {
+  margin-bottom: $spacing-md;
+}
+
+.sheet-label {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-xs;
+}
+
+.sheet-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xs;
+}
+
+.sheet-severity {
+  font-size: $font-size-base;
+  color: $color-primary;
+  font-weight: 600;
+}
+
+.sheet-severity-hint {
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spacing-xs;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.sheet-required {
+  color: $color-primary;
+  margin: 0 2px;
+}
+
+.sheet-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+}
+
+.sheet-chip {
+  padding: 8px 16px;
+  background: $color-bg-input;
+  border-radius: 999px;
+  border: 2rpx solid transparent;
+
+  &--active {
+    background: rgba(243, 121, 158, 0.2);
+    border-color: $color-primary;
+  }
 
   &__text {
-    display: block;
-    text-align: center;
-    font-size: $font-size-xs;
+    font-size: $font-size-sm;
     color: $color-text-secondary;
+
+    .sheet-chip--active & {
+      color: $color-primary;
+      font-weight: 500;
+    }
+  }
+}
+
+.sheet-textarea {
+  width: 100%;
+  min-height: 88px;
+  padding: $spacing-xs;
+  background: $color-bg-input;
+  border-radius: $radius-sm;
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  box-sizing: border-box;
+}
+
+.sheet-actions {
+  display: flex;
+  gap: $spacing-xs;
+  margin-top: $spacing-md;
+}
+
+.sheet-btn {
+  flex: 1;
+  padding: 14px 0;
+  text-align: center;
+  border-radius: $radius-md;
+  font-size: $font-size-base;
+  font-weight: 600;
+
+  &--primary {
+    background: linear-gradient(135deg, #f3799e, #e05a84);
+    color: #fff;
+  }
+
+  &--danger {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 120, 120, 0.9);
+    flex: 0 0 32%;
   }
 }
