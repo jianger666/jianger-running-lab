@@ -1,63 +1,132 @@
 import { View, Text, Canvas, ITouchEvent } from '@tarojs/components';
 import Taro, { useReady } from '@tarojs/taro';
 import { useRef, useState, useCallback } from 'react';
-import { MUSCLES, OUTLINES, MUSCLE_META, VIEW_BOX } from './data/muscles';
+import {
+  MUSCLES,
+  OUTLINES,
+  MUSCLE_META,
+  SIDE_VIEWPORT,
+  BodySide,
+  MuscleWithSubpaths,
+} from './data/muscles';
 import { buildSvgPath } from './utils/svgPath';
 import './index.scss';
 
 interface CanvasRef {
   ctx: CanvasRenderingContext2D;
   dpr: number;
-  scale: number;
-  internalSize: number;
+  cssWidth: number;
+  cssHeight: number;
 }
 
-const CANVAS_PADDING_RPX = 32;
+const ASPECT_RATIO = 960 / 512;
+
+const getViewport = ({
+  side,
+  internalWidth,
+}: {
+  side: BodySide;
+  internalWidth: number;
+}) => {
+  const vp = SIDE_VIEWPORT[side];
+  return {
+    scale: internalWidth / vp.width,
+    offsetX: vp.offsetX,
+    offsetY: vp.offsetY,
+  };
+};
 
 const PainCheck = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [side, setSide] = useState<BodySide>('front');
   const canvasRef = useRef<CanvasRef | null>(null);
 
-  const drawAll = useCallback(({ selected }: { selected: string[] }) => {
-    const info = canvasRef.current;
-    if (!info) return;
-    const { ctx, internalSize, scale } = info;
+  const drawAll = useCallback(
+    ({
+      selected,
+      currentSide,
+    }: {
+      selected: string[];
+      currentSide: BodySide;
+    }) => {
+      const info = canvasRef.current;
+      if (!info) return;
+      const { ctx, dpr, cssWidth, cssHeight } = info;
+      const internalWidth = cssWidth * dpr;
+      const internalHeight = cssHeight * dpr;
+      const viewport = getViewport({ side: currentSide, internalWidth });
 
-    ctx.clearRect(0, 0, internalSize, internalSize);
+      ctx.clearRect(0, 0, internalWidth, internalHeight);
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
-    OUTLINES.forEach((o) => {
-      ctx.beginPath();
-      buildSvgPath({ ctx, d: o.d, transform: o.transform, scale });
-      ctx.fill();
-    });
+      const outline = OUTLINES.find((o) =>
+        currentSide === 'front'
+          ? o.id === 'outline-front'
+          : o.id === 'outline-back',
+      );
+      if (outline) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.beginPath();
+        buildSvgPath({
+          ctx,
+          d: outline.d,
+          transform: outline.transform,
+          viewport,
+        });
+        ctx.fill();
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-    ctx.lineWidth = 1.5;
-    OUTLINES.forEach((o) => {
-      ctx.beginPath();
-      buildSvgPath({ ctx, d: o.d, transform: o.transform, scale });
-      ctx.stroke();
-    });
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        buildSvgPath({
+          ctx,
+          d: outline.d,
+          transform: outline.transform,
+          viewport,
+        });
+        ctx.stroke();
+      }
 
-    MUSCLES.forEach((m) => {
-      const isSelected = selected.includes(m.id);
-      ctx.fillStyle = isSelected
-        ? 'rgba(243, 121, 158, 0.9)'
-        : 'rgba(243, 121, 158, 0.25)';
-      ctx.beginPath();
-      buildSvgPath({ ctx, d: m.d, transform: m.transform, scale });
-      ctx.fill();
-    });
+      MUSCLES.forEach((m) => {
+        const visibleSubpaths = m.subpaths.filter(
+          (sp) => sp.side === currentSide,
+        );
+        if (visibleSubpaths.length === 0) return;
+        const isSelected = selected.includes(m.id);
+        ctx.fillStyle = isSelected
+          ? 'rgba(243, 121, 158, 0.9)'
+          : 'rgba(243, 121, 158, 0.28)';
+        visibleSubpaths.forEach((sp) => {
+          ctx.beginPath();
+          buildSvgPath({
+            ctx,
+            d: sp.d,
+            transform: m.transform,
+            viewport,
+          });
+          ctx.fill();
+        });
+      });
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-    ctx.lineWidth = 0.8;
-    MUSCLES.forEach((m) => {
-      ctx.beginPath();
-      buildSvgPath({ ctx, d: m.d, transform: m.transform, scale });
-      ctx.stroke();
-    });
-  }, []);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 1;
+      MUSCLES.forEach((m) => {
+        const visibleSubpaths = m.subpaths.filter(
+          (sp) => sp.side === currentSide,
+        );
+        visibleSubpaths.forEach((sp) => {
+          ctx.beginPath();
+          buildSvgPath({
+            ctx,
+            d: sp.d,
+            transform: m.transform,
+            viewport,
+          });
+          ctx.stroke();
+        });
+      });
+    },
+    [],
+  );
 
   const setupCanvas = useCallback(() => {
     return new Promise<void>((resolve) => {
@@ -72,61 +141,86 @@ const PainCheck = () => {
           }
           const canvas = res[0].node;
           const cssWidth = res[0].width;
+          const cssHeight = res[0].height || cssWidth * ASPECT_RATIO;
           const dpr = Taro.getSystemInfoSync().pixelRatio;
-          const internalSize = Math.round(cssWidth * dpr);
-          canvas.width = internalSize;
-          canvas.height = internalSize;
+          canvas.width = Math.round(cssWidth * dpr);
+          canvas.height = Math.round(cssHeight * dpr);
           const ctx = canvas.getContext('2d');
-          canvasRef.current = {
-            ctx,
-            dpr,
-            scale: internalSize / VIEW_BOX.width,
-            internalSize,
-          };
+          canvasRef.current = { ctx, dpr, cssWidth, cssHeight };
           resolve();
         });
     });
   }, []);
 
   useReady(() => {
-    setupCanvas().then(() => drawAll({ selected: [] }));
+    setupCanvas().then(() => drawAll({ selected: [], currentSide: 'front' }));
   });
+
+  const hitTestMuscle = ({
+    x,
+    y,
+    ctx,
+    currentSide,
+    viewport,
+  }: {
+    x: number;
+    y: number;
+    ctx: CanvasRenderingContext2D;
+    currentSide: BodySide;
+    viewport: ReturnType<typeof getViewport>;
+  }): MuscleWithSubpaths | null => {
+    for (let i = MUSCLES.length - 1; i >= 0; i -= 1) {
+      const m = MUSCLES[i];
+      const subs = m.subpaths.filter((sp) => sp.side === currentSide);
+      for (const sp of subs) {
+        ctx.beginPath();
+        buildSvgPath({ ctx, d: sp.d, transform: m.transform, viewport });
+        if (ctx.isPointInPath(x, y)) {
+          return m;
+        }
+      }
+    }
+    return null;
+  };
 
   const handleCanvasTap = (e: ITouchEvent) => {
     const info = canvasRef.current;
     if (!info) return;
-    const { ctx, dpr } = info;
+    const { ctx, dpr, cssWidth } = info;
     const detail = e.detail as unknown as { x: number; y: number };
     const x = detail.x * dpr;
     const y = detail.y * dpr;
-    for (let i = MUSCLES.length - 1; i >= 0; i -= 1) {
-      const m = MUSCLES[i];
-      ctx.beginPath();
-      buildSvgPath({ ctx, d: m.d, transform: m.transform, scale: info.scale });
-      if (ctx.isPointInPath(x, y)) {
-        setSelectedIds((prev) => {
-          const next = prev.includes(m.id)
-            ? prev.filter((id) => id !== m.id)
-            : [...prev, m.id];
-          drawAll({ selected: next });
-          return next;
-        });
-        return;
-      }
+    const viewport = getViewport({ side, internalWidth: cssWidth * dpr });
+    const hit = hitTestMuscle({ x, y, ctx, currentSide: side, viewport });
+    if (!hit) {
+      drawAll({ selected: selectedIds, currentSide: side });
+      return;
     }
+    setSelectedIds((prev) => {
+      const next = prev.includes(hit.id)
+        ? prev.filter((id) => id !== hit.id)
+        : [...prev, hit.id];
+      drawAll({ selected: next, currentSide: side });
+      return next;
+    });
+  };
+
+  const handleSwitchSide = ({ next }: { next: BodySide }) => {
+    setSide(next);
+    drawAll({ selected: selectedIds, currentSide: next });
   };
 
   const handleRemoveChip = ({ id }: { id: string }) => {
     setSelectedIds((prev) => {
       const next = prev.filter((i) => i !== id);
-      drawAll({ selected: next });
+      drawAll({ selected: next, currentSide: side });
       return next;
     });
   };
 
   const handleClearAll = () => {
     setSelectedIds([]);
-    drawAll({ selected: [] });
+    drawAll({ selected: [], currentSide: side });
   };
 
   return (
@@ -138,10 +232,22 @@ const PainCheck = () => {
         </Text>
       </View>
 
-      <View
-        className="pain-canvas-wrap"
-        style={{ padding: `0 ${CANVAS_PADDING_RPX / 2}rpx` }}
-      >
+      <View className="pain-tabs">
+        <View
+          className={`pain-tab ${side === 'front' ? 'pain-tab--active' : ''}`}
+          onClick={() => handleSwitchSide({ next: 'front' })}
+        >
+          <Text>正面</Text>
+        </View>
+        <View
+          className={`pain-tab ${side === 'back' ? 'pain-tab--active' : ''}`}
+          onClick={() => handleSwitchSide({ next: 'back' })}
+        >
+          <Text>背面</Text>
+        </View>
+      </View>
+
+      <View className="pain-canvas-wrap">
         <Canvas
           id="bodyCanvas"
           type="2d"

@@ -19,16 +19,22 @@ const parseTransform = ({
   return nums as SvgTransform;
 };
 
+interface Viewport {
+  scale: number;
+  offsetX: number;
+  offsetY: number;
+}
+
 const applyMatrix = ({
   x,
   y,
   t,
-  scale,
+  vp,
 }: {
   x: number;
   y: number;
   t: SvgTransform | null;
-  scale: number;
+  vp: Viewport;
 }): [number, number] => {
   let nx = x;
   let ny = y;
@@ -37,23 +43,24 @@ const applyMatrix = ({
     nx = a * x + c * y + e;
     ny = b * x + d * y + f;
   }
-  return [nx * scale, ny * scale];
+  return [(nx - vp.offsetX) * vp.scale, (ny - vp.offsetY) * vp.scale];
 };
 
 interface BuildPathParams {
   ctx: CanvasRenderingContext2D;
   d: string;
   transform?: string;
-  scale?: number;
+  viewport: Viewport;
 }
 
 export const buildSvgPath = ({
   ctx,
   d,
   transform,
-  scale = 1,
+  viewport,
 }: BuildPathParams): void => {
   const t = parseTransform({ transform });
+  const vp = viewport;
 
   const tokens: Array<{ type: 'cmd' | 'num'; value: string | number }> = [];
   let m: RegExpExecArray | null;
@@ -89,7 +96,7 @@ export const buildSvgPath = ({
         const y = nextNum();
         const nx = cmd === 'm' ? cx + x : x;
         const ny = cmd === 'm' ? cy + y : y;
-        const [px, py] = applyMatrix({ x: nx, y: ny, t, scale });
+        const [px, py] = applyMatrix({ x: nx, y: ny, t, vp });
         ctx.moveTo(px, py);
         cx = nx;
         cy = ny;
@@ -104,7 +111,7 @@ export const buildSvgPath = ({
         const y = nextNum();
         const nx = cmd === 'l' ? cx + x : x;
         const ny = cmd === 'l' ? cy + y : y;
-        const [px, py] = applyMatrix({ x: nx, y: ny, t, scale });
+        const [px, py] = applyMatrix({ x: nx, y: ny, t, vp });
         ctx.lineTo(px, py);
         cx = nx;
         cy = ny;
@@ -114,7 +121,7 @@ export const buildSvgPath = ({
       case 'h': {
         const x = nextNum();
         const nx = cmd === 'h' ? cx + x : x;
-        const [px, py] = applyMatrix({ x: nx, y: cy, t, scale });
+        const [px, py] = applyMatrix({ x: nx, y: cy, t, vp });
         ctx.lineTo(px, py);
         cx = nx;
         break;
@@ -123,7 +130,7 @@ export const buildSvgPath = ({
       case 'v': {
         const y = nextNum();
         const ny = cmd === 'v' ? cy + y : y;
-        const [px, py] = applyMatrix({ x: cx, y: ny, t, scale });
+        const [px, py] = applyMatrix({ x: cx, y: ny, t, vp });
         ctx.lineTo(px, py);
         cy = ny;
         break;
@@ -141,19 +148,19 @@ export const buildSvgPath = ({
           x: base.bx + x1,
           y: base.by + y1,
           t,
-          scale,
+          vp,
         });
         const [p2x, p2y] = applyMatrix({
           x: base.bx + x2,
           y: base.by + y2,
           t,
-          scale,
+          vp,
         });
         const [px, py] = applyMatrix({
           x: base.bx + x,
           y: base.by + y,
           t,
-          scale,
+          vp,
         });
         ctx.bezierCurveTo(p1x, p1y, p2x, p2y, px, py);
         cx = base.bx + x;

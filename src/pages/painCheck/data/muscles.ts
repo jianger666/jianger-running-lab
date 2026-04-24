@@ -6,11 +6,22 @@ export interface MusclePath {
   transform?: string;
 }
 
+export interface SubPath {
+  d: string;
+  side: 'front' | 'back';
+}
+
+export interface MuscleWithSubpaths extends MusclePath {
+  subpaths: SubPath[];
+}
+
 export interface MuscleInfo {
   id: string;
   name: string;
   category: 'outline' | 'shoulder' | 'torso' | 'arm' | 'leg';
 }
+
+export type BodySide = 'front' | 'back';
 
 const musclesRaw = rawData as MusclePath[];
 
@@ -44,11 +55,53 @@ export const MUSCLE_META: Record<string, MuscleInfo> = {
   shins: { id: 'shins', name: '胫骨前肌', category: 'leg' },
 };
 
-export const OUTLINES = musclesRaw.filter((p) => p.id.startsWith('outline-'));
+const NUM_RE = /-?\d+\.?\d*(?:[eE][+-]?\d+)?/g;
 
-export const MUSCLES = musclesRaw.filter((p) => !p.id.startsWith('outline-'));
+const splitSubpaths = ({ d }: { d: string }): SubPath[] => {
+  const parts: string[] = [];
+  let start = 0;
+  for (let i = 1; i < d.length; i += 1) {
+    const ch = d[i];
+    if (ch === 'M' || ch === 'm') {
+      parts.push(d.substring(start, i));
+      start = i;
+    }
+  }
+  parts.push(d.substring(start));
+  return parts
+    .filter((sd) => sd.trim().length > 0)
+    .map((sd) => {
+      const nums = sd.match(NUM_RE)?.map(Number) ?? [];
+      const xs = nums.filter((_, i) => i % 2 === 0);
+      const maxX = xs.length ? Math.max(...xs) : 0;
+      const minX = xs.length ? Math.min(...xs) : 0;
+      const midX = (minX + maxX) / 2;
+      return { d: sd, side: midX < 500 ? 'front' : 'back' };
+    });
+};
 
-export const VIEW_BOX = {
-  width: 1024,
-  height: 1024,
+const enrich = (p: MusclePath): MuscleWithSubpaths => ({
+  ...p,
+  subpaths: splitSubpaths({ d: p.d }),
+});
+
+export const OUTLINES: MuscleWithSubpaths[] = musclesRaw
+  .filter((p) => p.id.startsWith('outline-'))
+  .map(enrich);
+
+export const MUSCLES: MuscleWithSubpaths[] = musclesRaw
+  .filter((p) => !p.id.startsWith('outline-'))
+  .map(enrich);
+
+export const SIDE_VIEWPORT: Record<
+  BodySide,
+  {
+    offsetX: number;
+    offsetY: number;
+    width: number;
+    height: number;
+  }
+> = {
+  front: { offsetX: 0, offsetY: 20, width: 512, height: 960 },
+  back: { offsetX: 512, offsetY: 20, width: 512, height: 960 },
 };

@@ -24,19 +24,46 @@
   }
 }
 
-.pain-canvas-wrap {
-  width: 100%;
+.pain-tabs {
   display: flex;
-  justify-content: center;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-sm;
+}
+
+.pain-tab {
+  flex: 1;
+  padding: 12px 0;
+  text-align: center;
+  background: $color-bg-card;
+  color: $color-text-secondary;
+  border-radius: $radius-sm;
+  font-size: $font-size-base;
+
+  &--active {
+    background: rgba(243, 121, 158, 0.2);
+    color: $color-primary;
+    font-weight: 600;
+    border: 1px solid rgba(243, 121, 158, 0.5);
+  }
+}
+
+.pain-canvas-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 187.5%;
   background: #1f1f1f;
   border-radius: $radius-md;
-  padding: $spacing-sm;
-  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .pain-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  height: 100%;
   display: block;
 }
 
