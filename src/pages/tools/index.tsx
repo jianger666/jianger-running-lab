@@ -1,5 +1,5 @@
 import { View, Text } from '@tarojs/components';
-import { ClockOutlined, PhotoOutlined } from '@taroify/icons';
+import { ClockOutlined, PhotoOutlined, WarningOutlined } from '@taroify/icons';
 import Taro from '@tarojs/taro';
 import type { ReactNode } from 'react';
 import './index.scss';
@@ -26,6 +26,13 @@ const TOOLS: ToolItem[] = [
     desc: '配速 → 完赛成绩',
     path: '/pages/paceTable/index',
     icon: <ClockOutlined size={24} color="#f3799e" />,
+  },
+  {
+    key: 'painCheck',
+    title: '跑步伤痛自查',
+    desc: '点选肌肉 AI 分析',
+    path: '/pages/painCheck/index',
+    icon: <WarningOutlined size={24} color="#f3799e" />,
   },
 ];
 

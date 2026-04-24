@@ -1,0 +1,112 @@
+@import '../../styles/variables.scss';
+
+.page-pain {
+  min-height: 100vh;
+  padding: $spacing-md $spacing-lg $spacing-xxl;
+  color: $color-text-primary;
+}
+
+.pain-header {
+  margin-bottom: $spacing-md;
+
+  &__title {
+    display: block;
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-text-primary;
+  }
+
+  &__desc {
+    display: block;
+    margin-top: $spacing-xs;
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+  }
+}
+
+.pain-canvas-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: #1f1f1f;
+  border-radius: $radius-md;
+  padding: $spacing-sm;
+  box-sizing: border-box;
+}
+
+.pain-canvas {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: block;
+}
+
+.pain-selected {
+  margin-top: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__label {
+    font-size: $font-size-base;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+
+  &__clear {
+    font-size: $font-size-sm;
+    color: $color-primary;
+  }
+
+  &__empty {
+    display: block;
+    margin-top: $spacing-sm;
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+  }
+}
+
+.pain-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+  margin-top: $spacing-sm;
+}
+
+.pain-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(243, 121, 158, 0.15);
+  border: 1px solid rgba(243, 121, 158, 0.4);
+  color: $color-primary;
+  border-radius: $radius-round;
+
+  &__text {
+    font-size: $font-size-sm;
+  }
+
+  &__close {
+    font-size: $font-size-md;
+    line-height: 1;
+    color: $color-primary;
+    margin-left: 2px;
+  }
+}
+
+.pain-footer {
+  margin-top: $spacing-lg;
+
+  &__text {
+    display: block;
+    text-align: center;
+    font-size: $font-size-xs;
+    color: $color-text-placeholder;
+  }
+}
