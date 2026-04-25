@@ -39,6 +39,7 @@ import type {
   RunnerProfilePayload,
 } from "../../apis/painCheck/types";
 import { parseRecoveryPlan, splitReportAndPlan } from "./utils/plan";
+import { parseMarkdown, stripInline } from "../../utils/markdown";
 import { profileApi } from "../../apis/profile";
 import type { UserProfile } from "../../apis/profile/types";
 import {
@@ -79,48 +80,6 @@ const INITIAL_REPORT: ReportState = {
   reminderModalOpen: false,
   remindTime: DEFAULT_REMIND_TIME,
 };
-
-interface MarkdownBlock {
-  type: "h1" | "h2" | "h3" | "li" | "hr" | "em" | "p";
-  content: string;
-}
-
-const parseMarkdown = ({ text }: { text: string }): MarkdownBlock[] => {
-  return text.split("\n").map((raw) => {
-    const line = raw.replace(/\s+$/, "");
-    if (!line) return { type: "p", content: "" };
-    const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
-    if (headingMatch) {
-      const level = headingMatch[1].length;
-      const content = headingMatch[2];
-      if (level === 1) return { type: "h1", content };
-      if (level === 2) return { type: "h2", content };
-      return { type: "h3", content };
-    }
-    if (/^[-*_]{3,}\s*$/.test(line)) return { type: "hr", content: "" };
-    if (/^\s*[-*+]\s+/.test(line))
-      return { type: "li", content: line.replace(/^\s*[-*+]\s+/, "") };
-    if (/^\s*\d+[\.\)]\s+/.test(line))
-      return { type: "li", content: line.replace(/^\s*\d+[\.\)]\s+/, "") };
-    if (/^>\s*/.test(line))
-      return { type: "p", content: line.replace(/^>\s*/, "") };
-    if (line.startsWith("*") && line.endsWith("*") && line.length > 2) {
-      return { type: "em", content: line.slice(1, -1) };
-    }
-    return { type: "p", content: line };
-  });
-};
-
-const stripInline = ({ text }: { text: string }) =>
-  text
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1")
-    .replace(/\*\*(.+?)\*\*/g, "$1")
-    .replace(/__(.+?)__/g, "$1")
-    .replace(/`([^`]+)`/g, "$1")
-    .replace(/~~(.+?)~~/g, "$1")
-    .replace(/(?:^|\s)\*(\S(?:.*?\S)?)\*(?=\s|[，。、！？,.\!\?:;)）】]|$)/g, " $1")
-    .replace(/(?:^|\s)_(\S(?:.*?\S)?)_(?=\s|[，。、！？,.\!\?:;)）】]|$)/g, " $1")
-    .replace(/^\s+/, "");
 
 const calculateAge = ({ birthday }: { birthday: string | null }) => {
   if (!birthday) return undefined;
@@ -646,16 +605,8 @@ const PainCheck = () => {
     return next;
   };
 
-  const handleSaveAndContinue = () => {
+  const handleSaveDraft = () => {
     commitDraft();
-  };
-
-  const handleSaveAndAnalyze = () => {
-    const next = commitDraft();
-    if (!next) return;
-    const completed = next.filter((p) => p.painTypeId);
-    if (completed.length === 0) return;
-    void startAnalyze({ completed });
   };
 
   const handleCancelDraft = () => {
@@ -864,6 +815,7 @@ const PainCheck = () => {
   };
 
   const handleCloseReminderModal = () => {
+    if (report.enablingReminder) return;
     setReport((prev) => ({ ...prev, reminderModalOpen: false }));
   };
 
@@ -1541,29 +1493,19 @@ const PainCheck = () => {
             </ScrollView>
 
             <View className="sheet-actions">
+              {editingId !== null && (
+                <View
+                  className="sheet-btn sheet-btn--danger"
+                  onClick={handleRemoveDraft}
+                >
+                  <Text>删除</Text>
+                </View>
+              )}
               <View
                 className="sheet-btn sheet-btn--primary"
-                onClick={handleSaveAndAnalyze}
+                onClick={handleSaveDraft}
               >
-                <Text>保存并开始 AI 分析</Text>
-              </View>
-              <View className="sheet-actions__row">
-                {editingId !== null && (
-                  <View
-                    className="sheet-btn sheet-btn--danger"
-                    onClick={handleRemoveDraft}
-                  >
-                    <Text>删除</Text>
-                  </View>
-                )}
-                <View
-                  className="sheet-btn sheet-btn--secondary"
-                  onClick={handleSaveAndContinue}
-                >
-                  <Text>
-                    {editingId !== null ? "保存" : "保存并继续添加"}
-                  </Text>
-                </View>
+                <Text>保存</Text>
               </View>
             </View>
           </View>

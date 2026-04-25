@@ -70,6 +70,27 @@
     font-size: $font-size-xs;
     color: $color-text-tertiary;
   }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-xs;
+    margin-top: $spacing-sm;
+  }
+
+  &__action {
+    padding: 8rpx 24rpx;
+    border-radius: 999rpx;
+    font-size: $font-size-xs;
+    background: rgba(255, 255, 255, 0.05);
+    color: $color-text-secondary;
+    border: 2rpx solid $color-border;
+
+    &--danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: $color-danger;
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+  }
 }
 
 .record-block {
@@ -97,6 +118,10 @@
     font-size: $font-size-xs;
     color: $color-text-tertiary;
   }
+
+  &__head--clickable {
+    cursor: pointer;
+  }
 }
 
 .plan-row {
@@ -107,27 +132,13 @@
   background: rgba(255, 255, 255, 0.03);
   align-items: flex-start;
 
-  &--checked {
-    background: rgba(46, 204, 113, 0.08);
-  }
-
-  &__check {
-    width: 36rpx;
-    height: 36rpx;
+  &__bullet {
+    width: 12rpx;
+    height: 12rpx;
     border-radius: 50%;
-    border: 2rpx solid $color-text-tertiary;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 4rpx;
+    background: $color-primary;
+    margin-top: 14rpx;
     flex-shrink: 0;
-    color: #fff;
-    font-size: $font-size-xs;
-
-    &--on {
-      background: #2ecc71;
-      border-color: #2ecc71;
-    }
   }
 
   &__main {
@@ -186,6 +197,18 @@
   &--loading {
     opacity: 0.6;
   }
+
+  &--time {
+    flex: 0 0 auto;
+    min-width: unset;
+    padding: $spacing-sm $spacing-md;
+  }
+
+  &--full {
+    flex: 1 0 100%;
+    min-width: unset;
+    margin-top: $spacing-xs;
+  }
 }
 
 .record-tip {
@@ -222,10 +245,8 @@
 }
 
 .record-report {
-  font-size: $font-size-sm;
-  color: $color-text-secondary;
-  line-height: 1.7;
-  white-space: pre-wrap;
+  display: flex;
+  flex-direction: column;
 }
 
 .point-row {
@@ -256,8 +277,3 @@
   }
 }
 
-.record-bottom {
-  display: flex;
-  gap: $spacing-sm;
-  margin: $spacing-md 0 $spacing-xl;
-}

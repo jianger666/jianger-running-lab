@@ -13,6 +13,7 @@ import {
   remindTimeFromIndex,
   remindTimeToIndex,
 } from "../../utils/remindTime";
+import { parseMarkdown, stripInline } from "../../utils/markdown";
 import "./index.scss";
 
 const TEMPLATE_ID = "r6Mg96WyISh0jUGySUSC0eJ2W2uR6csoSNMyI8i4rvU";
@@ -66,9 +67,9 @@ const PainCheckRecord = () => {
   const [detail, setDetail] = useState<PainCheckRecordDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [actionBusy, setActionBusy] = useState(false);
-  const [selected, setSelected] = useState<string[]>([]);
   const [pendingRemindTime, setPendingRemindTime] =
     useState<number>(DEFAULT_REMIND_TIME);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const fetchDetail = async () => {
     if (!recordId) return;
@@ -76,7 +77,6 @@ const PainCheckRecord = () => {
     try {
       const data = await painCheckApi.getRecord({ id: recordId });
       setDetail(data);
-      setSelected(data.planItems.map((p) => p.title));
       setPendingRemindTime(data.remindTime);
     } finally {
       setLoading(false);
@@ -86,12 +86,6 @@ const PainCheckRecord = () => {
   useDidShow(() => {
     void fetchDetail();
   });
-
-  const handleToggle = ({ title }: { title: string }) => {
-    setSelected((prev) =>
-      prev.includes(title) ? prev.filter((x) => x !== title) : [...prev, title],
-    );
-  };
 
   const requestSubscribe = async () => {
     const subRes = await (Taro.requestSubscribeMessage as unknown as (
@@ -115,7 +109,7 @@ const PainCheckRecord = () => {
       await painCheckApi.checkIn({
         id: detail.id,
         payload: {
-          completedItems: selected,
+          completedItems: detail.planItems.map((p) => p.title),
           subscribeAccepted: accepted,
           remindTime: pendingRemindTime,
         },
@@ -245,6 +239,22 @@ const PainCheckRecord = () => {
               · 创建 {formatDate({ raw: detail.createdAt })}
             </Text>
           </View>
+          <View className="record-hero__actions">
+            {isActive && (
+              <View
+                className="record-hero__action"
+                onClick={handleCure}
+              >
+                <Text>标记为已痊愈</Text>
+              </View>
+            )}
+            <View
+              className="record-hero__action record-hero__action--danger"
+              onClick={handleDelete}
+            >
+              <Text>删除记录</Text>
+            </View>
+          </View>
         </View>
 
         {isActive && detail.suggestRecovery && detail.planItems.length > 0 && (
@@ -261,32 +271,21 @@ const PainCheckRecord = () => {
                 <Text className="record-block__sub">未开启提醒</Text>
               )}
             </View>
-            {detail.planItems.map((item) => {
-              const checked = selected.includes(item.title);
-              return (
-                <View
-                  key={item.title}
-                  className={`plan-row ${checked ? "plan-row--checked" : ""}`}
-                  onClick={() => handleToggle({ title: item.title })}
-                >
-                  <View
-                    className={`plan-row__check ${checked ? "plan-row__check--on" : ""}`}
-                  >
-                    {checked && <Text>✓</Text>}
-                  </View>
-                  <View className="plan-row__main">
-                    <Text className="plan-row__title">{item.title}</Text>
-                    <Text className="plan-row__meta">
-                      每周 {item.frequencyPerWeek} 次
-                      {item.duration ? ` · ${item.duration}` : ""}
-                    </Text>
-                    {item.note && (
-                      <Text className="plan-row__note">{item.note}</Text>
-                    )}
-                  </View>
+            {detail.planItems.map((item) => (
+              <View key={item.title} className="plan-row">
+                <View className="plan-row__bullet" />
+                <View className="plan-row__main">
+                  <Text className="plan-row__title">{item.title}</Text>
+                  <Text className="plan-row__meta">
+                    每周 {item.frequencyPerWeek} 次
+                    {item.duration ? ` · ${item.duration}` : ""}
+                  </Text>
+                  {item.note && (
+                    <Text className="plan-row__note">{item.note}</Text>
+                  )}
                 </View>
-              );
-            })}
+              </View>
+            ))}
 
             <View className="record-actions">
               <Picker
@@ -298,14 +297,10 @@ const PainCheckRecord = () => {
                   setPendingRemindTime(remindTimeFromIndex({ index: idx }));
                 }}
               >
-                <View className="record-btn record-btn--ghost">
+                <View className="record-btn record-btn--ghost record-btn--time">
                   <Text>
-                    每日提醒时间 ·{" "}
                     {formatRemindTime({ minutes: pendingRemindTime })}
-                    {detail.reminderEnabled &&
-                    pendingRemindTime !== detail.remindTime
-                      ? "（下次打卡后生效）"
-                      : ""}
+                    {" ›"}
                   </Text>
                 </View>
               </Picker>
@@ -314,26 +309,36 @@ const PainCheckRecord = () => {
                 onClick={handleCheckIn}
               >
                 <Text>
-                  {todayChecked ? "再次打卡 / 续订提醒" : "完成今日打卡"}
+                  {actionBusy
+                    ? "处理中…"
+                    : todayChecked
+                      ? "再次打卡 / 续订提醒"
+                      : "完成今日打卡"}
                 </Text>
               </View>
-              {!detail.reminderEnabled && (
-                <View
-                  className="record-btn record-btn--ghost"
-                  onClick={handleEnableReminder}
-                >
-                  <Text>开启微信提醒</Text>
-                </View>
-              )}
-              {detail.reminderEnabled && (
-                <View
-                  className="record-btn record-btn--ghost"
-                  onClick={handleDisableReminder}
-                >
-                  <Text>关闭提醒</Text>
-                </View>
-              )}
             </View>
+            {!detail.reminderEnabled && (
+              <View
+                className={`record-btn record-btn--ghost record-btn--full ${actionBusy ? "record-btn--loading" : ""}`}
+                onClick={handleEnableReminder}
+              >
+                <Text>{actionBusy ? "处理中…" : "开启微信提醒"}</Text>
+              </View>
+            )}
+            {detail.reminderEnabled && (
+              <View
+                className="record-btn record-btn--ghost record-btn--full"
+                onClick={handleDisableReminder}
+              >
+                <Text>关闭提醒</Text>
+              </View>
+            )}
+            {detail.reminderEnabled &&
+              pendingRemindTime !== detail.remindTime && (
+                <Text className="record-tip">
+                  时间已修改，下次打卡后生效。
+                </Text>
+              )}
             <Text className="record-tip">
               微信订阅消息每次只能发送一次，需进入小程序点击「打卡」续订下次提醒，否则到期自动归档为已结束。
             </Text>
@@ -359,10 +364,65 @@ const PainCheckRecord = () => {
         )}
 
         <View className="record-block">
-          <Text className="record-block__title">AI 分析报告</Text>
-          <Text className="record-report" selectable>
-            {detail.reportText}
-          </Text>
+          <View
+            className="record-block__head record-block__head--clickable"
+            onClick={() => setReportOpen((v) => !v)}
+          >
+            <Text className="record-block__title">AI 分析报告</Text>
+            <Text className="record-block__sub">
+              {reportOpen ? "收起 ›" : "展开 ›"}
+            </Text>
+          </View>
+          {reportOpen && (
+            <View className="record-report">
+              {parseMarkdown({ text: detail.reportText }).map((block, idx) => {
+                const content = stripInline({ text: block.content });
+                if (block.type === "h1")
+                  return (
+                    <Text key={idx} className="report-md__h1">
+                      {content}
+                    </Text>
+                  );
+                if (block.type === "h2")
+                  return (
+                    <Text key={idx} className="report-md__h2">
+                      {content}
+                    </Text>
+                  );
+                if (block.type === "h3")
+                  return (
+                    <Text key={idx} className="report-md__h3">
+                      {content}
+                    </Text>
+                  );
+                if (block.type === "li")
+                  return (
+                    <View key={idx} className="report-md__li">
+                      <View className="report-md__li-dot" />
+                      <Text className="report-md__li-text" selectable>
+                        {content}
+                      </Text>
+                    </View>
+                  );
+                if (block.type === "hr")
+                  return <View key={idx} className="report-md__hr" />;
+                if (block.type === "em")
+                  return (
+                    <Text key={idx} className="report-md__em">
+                      {content}
+                    </Text>
+                  );
+                if (!content) {
+                  return <View key={idx} className="report-md__br" />;
+                }
+                return (
+                  <Text key={idx} className="report-md__p" selectable>
+                    {content}
+                  </Text>
+                );
+              })}
+            </View>
+          )}
         </View>
 
         <View className="record-block">
@@ -389,22 +449,6 @@ const PainCheckRecord = () => {
           ))}
         </View>
 
-        <View className="record-bottom">
-          {isActive && (
-            <View
-              className="record-btn record-btn--ghost"
-              onClick={handleCure}
-            >
-              <Text>标记为已痊愈</Text>
-            </View>
-          )}
-          <View
-            className="record-btn record-btn--danger"
-            onClick={handleDelete}
-          >
-            <Text>删除记录</Text>
-          </View>
-        </View>
       </ScrollView>
     </View>
   );
