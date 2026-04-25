@@ -169,6 +169,24 @@
     color: $color-text-tertiary;
     line-height: 1;
   }
+
+  &__delete {
+    flex-shrink: 0;
+    width: 64rpx;
+    height: 64rpx;
+    margin-left: $spacing-xs;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-text-tertiary;
+    border-radius: $radius-sm;
+    transition: background-color 0.15s ease;
+
+    &--active {
+      background: rgba(255, 90, 90, 0.12);
+      color: #ff7a7a;
+    }
+  }
 }
 
 .pain-submit {
@@ -538,12 +556,18 @@
 
 .sheet-actions {
   display: flex;
+  flex-direction: column;
   gap: $spacing-xs;
   padding: $spacing-sm $spacing-md
     calc($spacing-md + env(safe-area-inset-bottom));
   border-top: 2rpx solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
   background-color: #222228;
+
+  &__row {
+    display: flex;
+    gap: $spacing-xs;
+  }
 }
 
 .sheet-btn {
@@ -558,6 +582,12 @@
     background: linear-gradient(135deg, #f3799e, #e05a84);
     color: #fff;
     box-shadow: 0 4px 14px rgba(243, 121, 158, 0.32);
+  }
+
+  &--secondary {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.85);
+    border: 2rpx solid rgba(255, 255, 255, 0.12);
   }
 
   &--danger {

@@ -7,6 +7,7 @@ import {
   Picker,
 } from "@tarojs/components";
 import type { CanvasTouchEvent } from "@tarojs/components";
+import { DeleteOutlined } from "@taroify/icons";
 import Taro, { useReady } from "@tarojs/taro";
 import { useRef, useState, useCallback, useEffect } from "react";
 import {
@@ -618,15 +619,15 @@ const PainCheck = () => {
     });
   };
 
-  const handleSaveDraft = () => {
-    if (!draft) return;
+  const commitDraft = (): PainPoint[] | null => {
+    if (!draft) return null;
     if (!draft.painTypeId) {
       Taro.showToast({ title: "请选择疼痛性质", icon: "none" });
-      return;
+      return null;
     }
     if (!draft.severity) {
       Taro.showToast({ title: "请选择疼痛等级", icon: "none" });
-      return;
+      return null;
     }
     const next =
       editingId !== null
@@ -640,6 +641,19 @@ const PainCheck = () => {
       currentPoints: next,
       currentDraft: null,
     });
+    return next;
+  };
+
+  const handleSaveAndContinue = () => {
+    commitDraft();
+  };
+
+  const handleSaveAndAnalyze = () => {
+    const next = commitDraft();
+    if (!next) return;
+    const completed = next.filter((p) => p.painTypeId);
+    if (completed.length === 0) return;
+    void startAnalyze({ completed });
   };
 
   const handleCancelDraft = () => {
@@ -674,6 +688,29 @@ const PainCheck = () => {
       currentSide: side,
       currentPoints: [],
       currentDraft: null,
+    });
+  };
+
+  const handleRemovePoint = async ({
+    id,
+    label,
+  }: {
+    id: string;
+    label: string;
+  }) => {
+    const confirmRes = await Taro.showModal({
+      title: "删除该部位？",
+      content: `确认删除 “${label}” 吗？`,
+      confirmText: "删除",
+      confirmColor: "#ff5a5a",
+    });
+    if (!confirmRes.confirm) return;
+    const next = points.filter((p) => p.id !== id);
+    setPoints(next);
+    drawAll({
+      currentSide: side,
+      currentPoints: next,
+      currentDraft: draft,
     });
   };
 
@@ -974,7 +1011,16 @@ const PainCheck = () => {
                   </Text>
                 )}
               </View>
-              <Text className="pain-list__arrow">›</Text>
+              <View
+                className="pain-list__delete"
+                hoverClass="pain-list__delete--active"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  void handleRemovePoint({ id: p.id, label: p.autoLabel });
+                }}
+              >
+                <DeleteOutlined size="20" />
+              </View>
             </View>
           );
         })}
@@ -1466,19 +1512,29 @@ const PainCheck = () => {
             </ScrollView>
 
             <View className="sheet-actions">
-              {editingId !== null && (
-                <View
-                  className="sheet-btn sheet-btn--danger"
-                  onClick={handleRemoveDraft}
-                >
-                  <Text>删除</Text>
-                </View>
-              )}
               <View
                 className="sheet-btn sheet-btn--primary"
-                onClick={handleSaveDraft}
+                onClick={handleSaveAndAnalyze}
               >
-                <Text>保存</Text>
+                <Text>保存并开始 AI 分析</Text>
+              </View>
+              <View className="sheet-actions__row">
+                {editingId !== null && (
+                  <View
+                    className="sheet-btn sheet-btn--danger"
+                    onClick={handleRemoveDraft}
+                  >
+                    <Text>删除</Text>
+                  </View>
+                )}
+                <View
+                  className="sheet-btn sheet-btn--secondary"
+                  onClick={handleSaveAndContinue}
+                >
+                  <Text>
+                    {editingId !== null ? "保存" : "保存并继续添加"}
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
