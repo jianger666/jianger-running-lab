@@ -61,6 +61,7 @@ interface ReportState {
   savedRecordId: string | null;
   reminderEnabled: boolean;
   enablingReminder: boolean;
+  reminderModalOpen: boolean;
   remindTime: number;
 }
 
@@ -75,6 +76,7 @@ const INITIAL_REPORT: ReportState = {
   savedRecordId: null,
   reminderEnabled: false,
   enablingReminder: false,
+  reminderModalOpen: false,
   remindTime: DEFAULT_REMIND_TIME,
 };
 
@@ -851,14 +853,18 @@ const PainCheck = () => {
         ...prev,
         saveStatus: "saved",
         savedRecordId: result.id,
+        reminderModalOpen: prev.plan?.suggestRecovery ? true : false,
       }));
-      Taro.showToast({ title: "已保存到我的记录", icon: "success" });
     } catch (err) {
       setReport((prev) => ({ ...prev, saveStatus: "idle" }));
       const message =
         err instanceof Error ? err.message : "保存失败，请稍后重试";
       Taro.showToast({ title: message, icon: "none" });
     }
+  };
+
+  const handleCloseReminderModal = () => {
+    setReport((prev) => ({ ...prev, reminderModalOpen: false }));
   };
 
   const handleEnableReminder = async () => {
@@ -886,6 +892,7 @@ const PainCheck = () => {
         ...prev,
         enablingReminder: false,
         reminderEnabled: true,
+        reminderModalOpen: false,
       }));
       Taro.showToast({ title: "提醒已开启", icon: "success" });
     } catch (err) {
@@ -1274,41 +1281,6 @@ const PainCheck = () => {
                     </Text>
                   </View>
                 )}
-              {report.status === "done" &&
-                report.saveStatus === "saved" &&
-                !report.reminderEnabled && (
-                  <>
-                    <Picker
-                      mode="selector"
-                      range={REMIND_TIME_OPTIONS}
-                      value={remindTimeToIndex({ minutes: report.remindTime })}
-                      onChange={(e) => {
-                        const idx = Number(e.detail.value);
-                        setReport((prev) => ({
-                          ...prev,
-                          remindTime: remindTimeFromIndex({ index: idx }),
-                        }));
-                      }}
-                    >
-                      <View className="report-btn report-btn--ghost">
-                        <Text>
-                          每日提醒时间 ·{" "}
-                          {formatRemindTime({ minutes: report.remindTime })}
-                        </Text>
-                      </View>
-                    </Picker>
-                    <View
-                      className={`report-btn report-btn--primary ${
-                        report.enablingReminder ? "report-btn--loading" : ""
-                      }`}
-                      onClick={handleEnableReminder}
-                    >
-                      <Text>
-                        {report.enablingReminder ? "处理中…" : "开启微信提醒"}
-                      </Text>
-                    </View>
-                  </>
-                )}
               {report.status === "done" && report.saveStatus === "saved" && (
                 <View
                   className="report-btn report-btn--ghost"
@@ -1340,6 +1312,63 @@ const PainCheck = () => {
                 </View>
               )}
           </View>
+          {report.reminderModalOpen && (
+            <View className="reminder-mask" onClick={handleCloseReminderModal}>
+              <View
+                className="reminder-card"
+                onClick={(e) => e.stopPropagation()}
+                catchMove
+              >
+                <Text className="reminder-card__title">
+                  已保存，开启微信打卡提醒？
+                </Text>
+                <Text className="reminder-card__desc">
+                  开启后，AI 康复建议会按你设定的时间通过微信订阅消息提醒你打卡，每次打卡可续订下一次提醒。
+                </Text>
+                <Picker
+                  mode="selector"
+                  range={REMIND_TIME_OPTIONS}
+                  value={remindTimeToIndex({ minutes: report.remindTime })}
+                  onChange={(e) => {
+                    const idx = Number(e.detail.value);
+                    setReport((prev) => ({
+                      ...prev,
+                      remindTime: remindTimeFromIndex({ index: idx }),
+                    }));
+                  }}
+                >
+                  <View className="reminder-card__time">
+                    <Text className="reminder-card__time-label">
+                      每日提醒时间
+                    </Text>
+                    <Text className="reminder-card__time-value">
+                      {formatRemindTime({ minutes: report.remindTime })} ›
+                    </Text>
+                  </View>
+                </Picker>
+                <View className="reminder-card__actions">
+                  <View
+                    className="reminder-card__btn reminder-card__btn--ghost"
+                    onClick={handleCloseReminderModal}
+                  >
+                    <Text>暂不开启</Text>
+                  </View>
+                  <View
+                    className={`reminder-card__btn reminder-card__btn--primary ${
+                      report.enablingReminder
+                        ? "reminder-card__btn--loading"
+                        : ""
+                    }`}
+                    onClick={handleEnableReminder}
+                  >
+                    <Text>
+                      {report.enablingReminder ? "处理中…" : "开启提醒"}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          )}
         </View>
       )}
 

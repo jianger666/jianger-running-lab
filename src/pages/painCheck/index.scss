@@ -1159,3 +1159,92 @@
   }
 }
 
+.reminder-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-lg;
+  animation: report-fade-in 200ms ease-out;
+}
+
+.reminder-card {
+  width: 100%;
+  max-width: 600rpx;
+  background: #1f1f25;
+  border: 2rpx solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+
+  &__desc {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    line-height: 1.6;
+  }
+
+  &__time {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-sm $spacing-md;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    border: 2rpx solid rgba(255, 255, 255, 0.06);
+  }
+
+  &__time-label {
+    font-size: $font-size-base;
+    color: $color-text-primary;
+  }
+
+  &__time-value {
+    font-size: $font-size-base;
+    color: $color-primary;
+    font-weight: 600;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-xs;
+    margin-top: $spacing-xs;
+  }
+
+  &__btn {
+    flex: 1;
+    padding: 14px 0;
+    text-align: center;
+    border-radius: 14px;
+    font-size: $font-size-base;
+    font-weight: 600;
+
+    &--primary {
+      background: linear-gradient(135deg, #f3799e, #e05a84);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(243, 121, 158, 0.32);
+    }
+
+    &--ghost {
+      background: rgba(255, 255, 255, 0.05);
+      color: $color-text-secondary;
+      border: 2rpx solid rgba(255, 255, 255, 0.08);
+    }
+
+    &--loading {
+      opacity: 0.6;
+    }
+  }
+}
+
