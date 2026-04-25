@@ -590,10 +590,10 @@ const PainCheck = () => {
       Taro.showToast({ title: "请选择疼痛等级", icon: "none" });
       return null;
     }
-    const next =
-      editingId !== null
-        ? points.map((p) => (p.id === editingId ? draft : p))
-        : [...points, draft];
+    const isAdding = editingId === null;
+    const next = isAdding
+      ? [...points, draft]
+      : points.map((p) => (p.id === editingId ? draft : p));
     setPoints(next);
     setDraft(null);
     setEditingId(null);
@@ -602,6 +602,14 @@ const PainCheck = () => {
       currentPoints: next,
       currentDraft: null,
     });
+    if (isAdding) {
+      setTimeout(() => {
+        Taro.pageScrollTo({
+          scrollTop: 99999,
+          duration: 300,
+        });
+      }, 80);
+    }
     return next;
   };
 
