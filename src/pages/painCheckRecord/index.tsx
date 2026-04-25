@@ -271,6 +271,9 @@ const PainCheckRecord = () => {
                 <Text className="record-block__sub">未开启提醒</Text>
               )}
             </View>
+            <Text className="record-block__hint">
+              动作不熟悉可按名称去搜视频跟练
+            </Text>
             {detail.planItems.map((item) => (
               <View key={item.title} className="plan-row">
                 <View className="plan-row__bullet" />

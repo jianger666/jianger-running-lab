@@ -124,6 +124,12 @@
     color: $color-text-tertiary;
   }
 
+  &__hint {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-top: -4rpx;
+  }
+
   &__head--clickable {
     cursor: pointer;
   }
