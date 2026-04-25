@@ -42,11 +42,11 @@ const sanitizeItem = ({
   if (!raw || typeof raw !== "object") return null;
   const x = raw as Record<string, unknown>;
   const title = typeof x.title === "string" ? x.title.trim() : "";
-  const freq = Number(x.frequencyPerWeek);
+  const freq = Number(x.frequencyPerDay);
   if (!title || !Number.isFinite(freq)) return null;
   return {
     title: title.slice(0, 24),
-    frequencyPerWeek: Math.max(1, Math.min(7, Math.round(freq))),
+    frequencyPerDay: Math.max(1, Math.min(4, Math.round(freq))),
     duration:
       typeof x.duration === "string" ? x.duration.slice(0, 30) : undefined,
     note: typeof x.note === "string" ? x.note.slice(0, 60) : undefined,

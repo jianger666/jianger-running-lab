@@ -277,8 +277,12 @@ const PainCheckRecord = () => {
                 <View className="plan-row__main">
                   <Text className="plan-row__title">{item.title}</Text>
                   <Text className="plan-row__meta">
-                    每周 {item.frequencyPerWeek} 次
-                    {item.duration ? ` · ${item.duration}` : ""}
+                    每天{" "}
+                    {item.frequencyPerDay ??
+                      (item as unknown as { frequencyPerWeek?: number })
+                        .frequencyPerWeek ??
+                      1}{" "}
+                    次{item.duration ? ` · ${item.duration}` : ""}
                   </Text>
                   {item.note && (
                     <Text className="plan-row__note">{item.note}</Text>

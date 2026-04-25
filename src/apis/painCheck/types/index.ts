@@ -35,7 +35,7 @@ export type AnalyzeStreamEvent =
 
 export interface RecoveryPlanItem {
   title: string;
-  frequencyPerWeek: number;
+  frequencyPerDay: number;
   duration?: string;
   note?: string;
 }
