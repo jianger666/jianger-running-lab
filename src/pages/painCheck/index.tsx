@@ -1321,9 +1321,8 @@ const PainCheck = () => {
                     }`}
                     onClick={handleEnableReminder}
                   >
-                    <Text>
-                      {report.enablingReminder ? "处理中…" : "开启提醒"}
-                    </Text>
+                    {report.enablingReminder && <View className="spinner" />}
+                    <Text>开启提醒</Text>
                   </View>
                 </View>
               </View>

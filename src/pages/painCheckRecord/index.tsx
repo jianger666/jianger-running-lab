@@ -305,24 +305,21 @@ const PainCheckRecord = () => {
                 </View>
               </Picker>
               <View
-                className={`record-btn record-btn--primary ${actionBusy ? "record-btn--loading" : ""}`}
+                className={`record-btn record-btn--primary ${actionBusy ? "record-btn--disabled" : ""}`}
                 onClick={handleCheckIn}
               >
                 <Text>
-                  {actionBusy
-                    ? "处理中…"
-                    : todayChecked
-                      ? "再次打卡 / 续订提醒"
-                      : "完成今日打卡"}
+                  {todayChecked ? "再次打卡 / 续订提醒" : "完成今日打卡"}
                 </Text>
               </View>
             </View>
             {!detail.reminderEnabled && (
               <View
-                className={`record-btn record-btn--ghost record-btn--full ${actionBusy ? "record-btn--loading" : ""}`}
+                className={`record-btn record-btn--ghost record-btn--full ${actionBusy ? "record-btn--disabled" : ""}`}
                 onClick={handleEnableReminder}
               >
-                <Text>{actionBusy ? "处理中…" : "开启微信提醒"}</Text>
+                {actionBusy && <View className="spinner spinner--dark" />}
+                <Text>开启微信提醒</Text>
               </View>
             )}
             {detail.reminderEnabled && (

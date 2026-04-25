@@ -102,3 +102,26 @@
     opacity: 0;
   }
 }
+
+.spinner {
+  display: inline-block;
+  width: 28rpx;
+  height: 28rpx;
+  border: 3rpx solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spinner-rotate 0.8s linear infinite;
+  vertical-align: middle;
+  margin-right: 12rpx;
+
+  &--dark {
+    border-color: rgba(0, 0, 0, 0.15);
+    border-top-color: $color-text-primary;
+  }
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

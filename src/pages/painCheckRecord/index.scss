@@ -73,22 +73,27 @@
 
   &__actions {
     display: flex;
-    gap: $spacing-xs;
-    margin-top: $spacing-sm;
+    gap: $spacing-sm;
+    margin-top: $spacing-md;
+    padding-top: $spacing-sm;
+    border-top: 2rpx solid rgba(255, 255, 255, 0.05);
   }
 
   &__action {
-    padding: 8rpx 24rpx;
-    border-radius: 999rpx;
-    font-size: $font-size-xs;
-    background: rgba(255, 255, 255, 0.05);
-    color: $color-text-secondary;
+    flex: 1;
+    text-align: center;
+    padding: 18rpx 0;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.06);
+    color: $color-text-primary;
     border: 2rpx solid $color-border;
 
     &--danger {
-      background: rgba(239, 68, 68, 0.1);
+      background: rgba(239, 68, 68, 0.12);
       color: $color-danger;
-      border-color: rgba(239, 68, 68, 0.25);
+      border-color: rgba(239, 68, 68, 0.3);
     }
   }
 }
@@ -180,6 +185,14 @@
   border-radius: 999rpx;
   font-size: $font-size-base;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &--disabled {
+    opacity: 0.55;
+    pointer-events: none;
+  }
 
   &--primary {
     background: linear-gradient(135deg, #f3799e, #6e63ff);
