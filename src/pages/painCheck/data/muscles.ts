@@ -1,68 +1,105 @@
-import rawData from './muscles-male.json';
+import rawData from "./muscles-atlas.json";
+import {
+  MUSCLE_NAMES,
+  getMuscleAnatomicalSide,
+  getMuscleDisplayName,
+} from "./muscle-names";
 
-export interface MusclePath {
+export type BodySide = "front" | "back";
+
+export interface BBox {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
+export interface RawMusclePath {
   id: string;
+  view: BodySide;
   d: string;
   transform?: string;
 }
 
 export interface SubPath {
   d: string;
-  side: 'front' | 'back';
+  side: BodySide;
+  bbox: BBox;
 }
 
-export interface MuscleWithSubpaths extends MusclePath {
+export interface MuscleEntry {
+  id: string;
+  baseId: string;
+  view: BodySide;
+  name: string;
+  anatomicalSide: "left" | "right" | "center";
+  d: string;
+  transform?: string;
   subpaths: SubPath[];
 }
 
-export interface MuscleInfo {
-  id: string;
-  name: string;
-  category: 'outline' | 'shoulder' | 'torso' | 'arm' | 'leg';
-}
+const NUM_RE = /-?\d+\.?\d*(?:[eE][+-]?\d+)?/g;
+const TRANSFORM_RE = /matrix\(([^)]+)\)/;
 
-export type BodySide = 'front' | 'back';
-
-const musclesRaw = rawData as MusclePath[];
-
-export const MUSCLE_META: Record<string, MuscleInfo> = {
-  'outline-back': { id: 'outline-back', name: '背面轮廓', category: 'outline' },
-  'outline-front': {
-    id: 'outline-front',
-    name: '正面轮廓',
-    category: 'outline',
-  },
-  neck: { id: 'neck', name: '颈部', category: 'shoulder' },
-  traps: { id: 'traps', name: '斜方肌', category: 'shoulder' },
-  frontDelts: { id: 'frontDelts', name: '三角肌前束', category: 'shoulder' },
-  sideDelts: { id: 'sideDelts', name: '三角肌中束', category: 'shoulder' },
-  rearDelts: { id: 'rearDelts', name: '三角肌后束', category: 'shoulder' },
-  rotatorCuffs: { id: 'rotatorCuffs', name: '肩袖', category: 'shoulder' },
-  chest: { id: 'chest', name: '胸肌', category: 'torso' },
-  abs: { id: 'abs', name: '腹肌', category: 'torso' },
-  obliques: { id: 'obliques', name: '腹斜肌', category: 'torso' },
-  lats: { id: 'lats', name: '背阔肌', category: 'torso' },
-  lowerBack: { id: 'lowerBack', name: '下背部', category: 'torso' },
-  biceps: { id: 'biceps', name: '肱二头肌', category: 'arm' },
-  triceps: { id: 'triceps', name: '肱三头肌', category: 'arm' },
-  forearms: { id: 'forearms', name: '前臂', category: 'arm' },
-  glutes: { id: 'glutes', name: '臀肌', category: 'leg' },
-  abductors: { id: 'abductors', name: '髋外展肌', category: 'leg' },
-  adductors: { id: 'adductors', name: '大腿内收肌', category: 'leg' },
-  quads: { id: 'quads', name: '股四头肌', category: 'leg' },
-  hamstrings: { id: 'hamstrings', name: '腘绳肌', category: 'leg' },
-  calves: { id: 'calves', name: '小腿', category: 'leg' },
-  shins: { id: 'shins', name: '胫骨前肌', category: 'leg' },
+const parseMatrix = ({
+  transform,
+}: {
+  transform?: string;
+}): [number, number, number, number, number, number] | null => {
+  if (!transform) return null;
+  const m = TRANSFORM_RE.exec(transform);
+  if (!m) return null;
+  const nums = m[1].match(NUM_RE)?.map(Number) ?? [];
+  if (nums.length < 6) return null;
+  return [nums[0], nums[1], nums[2], nums[3], nums[4], nums[5]];
 };
 
-const NUM_RE = /-?\d+\.?\d*(?:[eE][+-]?\d+)?/g;
+const applyMat = (
+  x: number,
+  y: number,
+  m: ReturnType<typeof parseMatrix>,
+): [number, number] => {
+  if (!m) return [x, y];
+  return [m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5]];
+};
 
-const splitSubpaths = ({ d }: { d: string }): SubPath[] => {
+const computeBbox = ({
+  d,
+  transform,
+}: {
+  d: string;
+  transform?: string;
+}): BBox => {
+  const mat = parseMatrix({ transform });
+  const nums = d.match(NUM_RE)?.map(Number) ?? [];
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (let i = 0; i < nums.length - 1; i += 2) {
+    const [x, y] = applyMat(nums[i], nums[i + 1], mat);
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  return { minX, maxX, minY, maxY };
+};
+
+const splitSubpaths = ({
+  d,
+  transform,
+  side,
+}: {
+  d: string;
+  transform?: string;
+  side: BodySide;
+}): SubPath[] => {
   const parts: string[] = [];
   let start = 0;
   for (let i = 1; i < d.length; i += 1) {
     const ch = d[i];
-    if (ch === 'M' || ch === 'm') {
+    if (ch === "M" || ch === "m") {
       parts.push(d.substring(start, i));
       start = i;
     }
@@ -70,38 +107,45 @@ const splitSubpaths = ({ d }: { d: string }): SubPath[] => {
   parts.push(d.substring(start));
   return parts
     .filter((sd) => sd.trim().length > 0)
-    .map((sd) => {
-      const nums = sd.match(NUM_RE)?.map(Number) ?? [];
-      const xs = nums.filter((_, i) => i % 2 === 0);
-      const maxX = xs.length ? Math.max(...xs) : 0;
-      const minX = xs.length ? Math.min(...xs) : 0;
-      const midX = (minX + maxX) / 2;
-      return { d: sd, side: midX < 500 ? 'front' : 'back' };
-    });
+    .map((sd) => ({
+      d: sd,
+      side,
+      bbox: computeBbox({ d: sd, transform }),
+    }));
 };
 
-const enrich = (p: MusclePath): MuscleWithSubpaths => ({
-  ...p,
-  subpaths: splitSubpaths({ d: p.d }),
-});
+const enrich = (p: RawMusclePath): MuscleEntry => {
+  const baseId = p.id.startsWith("outline-")
+    ? p.id
+    : p.id.replace(/_l$|_r$/, "");
+  return {
+    id: p.id,
+    baseId,
+    view: p.view,
+    name: getMuscleDisplayName(p.id),
+    anatomicalSide: getMuscleAnatomicalSide(p.id),
+    d: p.d,
+    transform: p.transform,
+    subpaths: splitSubpaths({ d: p.d, transform: p.transform, side: p.view }),
+  };
+};
 
-export const OUTLINES: MuscleWithSubpaths[] = musclesRaw
-  .filter((p) => p.id.startsWith('outline-'))
-  .map(enrich);
+const enriched = (rawData as RawMusclePath[]).map(enrich);
 
-export const MUSCLES: MuscleWithSubpaths[] = musclesRaw
-  .filter((p) => !p.id.startsWith('outline-'))
-  .map(enrich);
+export const OUTLINES: MuscleEntry[] = enriched.filter((e) =>
+  e.id.startsWith("outline-"),
+);
+
+export const MUSCLES: MuscleEntry[] = enriched.filter(
+  (e) => !e.id.startsWith("outline-"),
+);
 
 export const SIDE_VIEWPORT: Record<
   BodySide,
-  {
-    offsetX: number;
-    offsetY: number;
-    width: number;
-    height: number;
-  }
+  { offsetX: number; offsetY: number; width: number; height: number }
 > = {
-  front: { offsetX: 0, offsetY: 20, width: 512, height: 960 },
-  back: { offsetX: 512, offsetY: 20, width: 512, height: 960 },
+  front: { offsetX: 0, offsetY: 0, width: 587, height: 1137 },
+  back: { offsetX: 0, offsetY: 0, width: 596, height: 1133 },
 };
+
+export { MUSCLE_NAMES };

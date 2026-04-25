@@ -1,0 +1,125 @@
+@import "../../styles/variables.scss";
+
+.page-records {
+  min-height: 100vh;
+  background: $color-bg-page;
+  display: flex;
+  flex-direction: column;
+}
+
+.records-tabs {
+  display: flex;
+  gap: $spacing-xs;
+  padding: $spacing-md;
+  background: $color-bg-card;
+  border-bottom: 2rpx solid $color-border;
+}
+
+.records-tab {
+  padding: $spacing-xs $spacing-md;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.04);
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+
+  &--active {
+    background: linear-gradient(135deg, #f3799e, #6e63ff);
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+.records-scroll {
+  flex: 1;
+  padding: $spacing-md;
+  box-sizing: border-box;
+}
+
+.records-empty {
+  padding: $spacing-xxl 0;
+  text-align: center;
+  color: $color-text-tertiary;
+  font-size: $font-size-sm;
+}
+
+.record-card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-size: $font-size-md;
+    font-weight: 600;
+    color: $color-text-primary;
+    flex: 1;
+    margin-right: $spacing-md;
+  }
+
+  &__severity {
+    font-size: $font-size-xs;
+    padding: 4rpx 16rpx;
+    border-radius: 999rpx;
+
+    &--mild {
+      background: rgba(46, 204, 113, 0.15);
+      color: #2ecc71;
+    }
+    &--moderate {
+      background: rgba(255, 193, 7, 0.15);
+      color: #ffc107;
+    }
+    &--severe {
+      background: rgba(255, 94, 142, 0.18);
+      color: #ff5e8e;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8rpx;
+  }
+
+  &__meta-item {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: $spacing-sm;
+    border-top: 2rpx dashed $color-border;
+  }
+
+  &__tag {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+
+    &--remind {
+      color: #f3799e;
+    }
+    &--cured {
+      color: #2ecc71;
+    }
+    &--expired {
+      color: $color-text-tertiary;
+    }
+  }
+
+  &__arrow {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}

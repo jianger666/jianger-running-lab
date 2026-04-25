@@ -1,7 +1,7 @@
 import { View, Text, Image, Button, Input } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import { useState, useMemo } from 'react';
-import { Arrow, UserOutlined } from '@taroify/icons';
+import { Arrow, UserOutlined, RecordsOutlined } from '@taroify/icons';
 import { profileApi } from '../../apis/profile';
 import './index.scss';
 
@@ -82,6 +82,16 @@ const Profile = () => {
         >
           <UserOutlined size={20} color="#f3799e" />
           <Text className="menu-item__text">身体信息</Text>
+          <Arrow size={16} color="#666" />
+        </View>
+        <View
+          className="menu-item"
+          onClick={() =>
+            Taro.navigateTo({ url: '/pages/painCheckRecords/index' })
+          }
+        >
+          <RecordsOutlined size={20} color="#f3799e" />
+          <Text className="menu-item__text">伤痛自查记录</Text>
           <Arrow size={16} color="#666" />
         </View>
       </View>

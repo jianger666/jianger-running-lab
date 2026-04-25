@@ -5,6 +5,8 @@ export default defineAppConfig({
     'pages/profile/index',
     'pages/paceTable/index',
     'pages/painCheck/index',
+    'pages/painCheckRecords/index',
+    'pages/painCheckRecord/index',
     'pages/foodCalorie/index',
     'pages/profileEdit/index',
   ],

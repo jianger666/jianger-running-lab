@@ -1,0 +1,263 @@
+@import "../../styles/variables.scss";
+
+.page-record {
+  min-height: 100vh;
+  background: $color-bg-page;
+  display: flex;
+  flex-direction: column;
+}
+
+.record-empty {
+  padding: $spacing-xxl 0;
+  text-align: center;
+  color: $color-text-tertiary;
+  font-size: $font-size-sm;
+}
+
+.record-scroll {
+  flex: 1;
+  padding: $spacing-md;
+  box-sizing: border-box;
+}
+
+.record-hero {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-size: $font-size-lg;
+    color: $color-text-primary;
+    font-weight: 700;
+    flex: 1;
+    margin-right: $spacing-md;
+  }
+
+  &__severity {
+    font-size: $font-size-xs;
+    padding: 4rpx 16rpx;
+    border-radius: 999rpx;
+
+    &--mild {
+      background: rgba(46, 204, 113, 0.15);
+      color: #2ecc71;
+    }
+    &--moderate {
+      background: rgba(255, 193, 7, 0.15);
+      color: #ffc107;
+    }
+    &--severe {
+      background: rgba(255, 94, 142, 0.18);
+      color: #ff5e8e;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8rpx;
+    margin-top: $spacing-sm;
+  }
+
+  &__meta-item {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+}
+
+.record-block {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-size: $font-size-md;
+    color: $color-text-primary;
+    font-weight: 600;
+  }
+
+  &__sub {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+}
+
+.plan-row {
+  display: flex;
+  gap: $spacing-sm;
+  padding: $spacing-sm;
+  border-radius: $radius-md;
+  background: rgba(255, 255, 255, 0.03);
+  align-items: flex-start;
+
+  &--checked {
+    background: rgba(46, 204, 113, 0.08);
+  }
+
+  &__check {
+    width: 36rpx;
+    height: 36rpx;
+    border-radius: 50%;
+    border: 2rpx solid $color-text-tertiary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 4rpx;
+    flex-shrink: 0;
+    color: #fff;
+    font-size: $font-size-xs;
+
+    &--on {
+      background: #2ecc71;
+      border-color: #2ecc71;
+    }
+  }
+
+  &__main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+  }
+
+  &__title {
+    font-size: $font-size-base;
+    color: $color-text-primary;
+    font-weight: 600;
+  }
+
+  &__meta {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+
+  &__note {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+}
+
+.record-actions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.record-btn {
+  flex: 1;
+  min-width: 200rpx;
+  text-align: center;
+  padding: $spacing-sm 0;
+  border-radius: 999rpx;
+  font-size: $font-size-base;
+  font-weight: 600;
+
+  &--primary {
+    background: linear-gradient(135deg, #f3799e, #6e63ff);
+    color: #fff;
+  }
+  &--ghost {
+    background: rgba(255, 255, 255, 0.06);
+    color: $color-text-primary;
+    border: 2rpx solid $color-border;
+  }
+  &--danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: $color-danger;
+  }
+  &--loading {
+    opacity: 0.6;
+  }
+}
+
+.record-tip {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  line-height: 1.6;
+  margin-top: $spacing-sm;
+}
+
+.check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  padding: $spacing-xs 0;
+  border-bottom: 2rpx dashed $color-border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__date {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    flex-shrink: 0;
+    width: 160rpx;
+  }
+
+  &__items {
+    flex: 1;
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    line-height: 1.6;
+  }
+}
+
+.record-report {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.point-row {
+  padding: $spacing-xs 0;
+  border-bottom: 2rpx dashed $color-border;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__name {
+    font-size: $font-size-base;
+    color: $color-text-primary;
+    font-weight: 600;
+  }
+
+  &__meta {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+
+  &__notes {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+}
+
+.record-bottom {
+  display: flex;
+  gap: $spacing-sm;
+  margin: $spacing-md 0 $spacing-xl;
+}
