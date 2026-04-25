@@ -272,7 +272,7 @@ const PainCheckRecord = () => {
               )}
             </View>
             <Text className="record-block__hint">
-              动作不熟悉可按名称去搜视频跟练
+              动作不明白可按名称去搜视频跟练
             </Text>
             {detail.planItems.map((item) => (
               <View key={item.title} className="plan-row">
